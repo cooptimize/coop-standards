@@ -1,0 +1,26 @@
+schema_version: 1
+authority: formal_standard
+authoritative_ref: default_branch
+content_mode: markdown_only
+precedence:
+  - project_override
+  - canonical_standard
+  - last_known_good
+  - bundled_fallback
+refresh:
+  startup: true
+  task_freshness_minutes: 15
+  force_command: coop sync
+  failure_mode: last_known_good
+  pin_revision_per_task: true
+  invalidate_index_on_revision_change: true
+standards:
+  sql:
+    path: standards/sql.md
+    section_refs: numeric
+  dax:
+    path: standards/dax.md
+    section_refs: numeric
+  semantic_model:
+    path: standards/semantic-model.md
+    section_refs: numeric
