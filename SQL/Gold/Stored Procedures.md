@@ -76,10 +76,10 @@ INSERT INTO fact.Sales
      ,SalesAmount
 )
 SELECT
-      fs.PKCustomer AS [FKCustomer]
+      fs.PKCustomer  AS [FKCustomer]
      ,fs.custaccount AS [Customer]
-     ,fs.salesid AS [SalesOrder]
-     ,fs.lineamount AS [SalesAmount]
+     ,fs.salesid     AS [SalesOrder]
+     ,fs.lineamount  AS [SalesAmount]
 FROM #FinalSales AS fs;
 ```
 

@@ -28,6 +28,7 @@ status: active
 - Enclose every column alias in brackets, such as `AS [Customer Name]`. Do not bracket source identifiers by default.
 - Do not use SQL reserved words as aliases. When an existing output contract requires one, enclose it in brackets.
 - In `INSERT ... SELECT`, every expression MUST be aliased to its exact target column.
+- Within each contiguous `SELECT` section, align column-alias `AS` keywords at the same tab stop. A section ends at a blank line or organizing comment. This alignment does not apply to table aliases, CTE declarations, or `CREATE ... AS`.
 
 ## CTEs
 
@@ -64,7 +65,7 @@ WITH
      )
 SELECT
       ac.accountnum AS [Customer]
-     ,cg.name AS [CustomerGroup]
+     ,cg.name       AS [CustomerGroup]
 FROM ActiveCustomers AS ac
 INNER JOIN bronze.raw_custgroup AS cg
     ON ac.dataareaid = cg.dataareaid

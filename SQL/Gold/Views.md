@@ -50,8 +50,8 @@ SELECT
       cust.PKCustomer AS [PKCustomer]
 
     --Attributes
-     ,cust.CustomerName AS [Customer Name]
-     ,cust.Customer + ' • ' + cust.CustomerName AS [Customer and Name]
+     ,cust.CustomerName                              AS [Customer Name]
+     ,cust.Customer + ' • ' + cust.CustomerName      AS [Customer and Name]
      ,cust.CustomerName + ' (' + cust.Customer + ')' AS [Name and (Customer)]
 FROM dim.Customer AS cust;
 ```
@@ -62,15 +62,15 @@ FROM dim.Customer AS cust;
 CREATE VIEW sales.Sales AS
 SELECT
     --Keys
-      NULL AS [FKNULL]
+      NULL             AS [FKNULL]
      ,sales.FKCustomer AS [FKCustomer]
-     ,sales.FKDate AS [FKDate]
+     ,sales.FKDate     AS [FKDate]
 
     --Attributes
      ,sales.SalesOrder AS [Sales Order]
 
     --Numbers
      ,sales.SalesAmount AS [SalesAmount]
-     ,sales.Quantity AS [Quantity]
+     ,sales.Quantity    AS [Quantity]
 FROM fact.Sales AS sales;
 ```
