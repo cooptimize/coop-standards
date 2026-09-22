@@ -1,51 +1,41 @@
 # Cooptimize Standards
 
-Canonical formal standards consumed by COOP.
+**Agents:** Read [AGENTS.md](AGENTS.md) before editing anything in this repository.
 
-## Files
+This repository contains Cooptimize's approved development standards. It is organized for both humans and deterministic retrieval by COOP.
 
-- `standards/sql.md` — SQL authoring and Fabric Warehouse rules.
-- `standards/dax.md` — DAX expression and measure-authoring rules.
-- `standards/semantic-model.md` — Power BI semantic-model structure, organization, formatting, and composite-model rules.
+## Find a standard
 
-## Authority
+### SQL
 
-These files are Cooptimize defaults. Effective precedence is:
+- [SQL overview](sql/README.md)
+- [Formatting](sql/formatting.md)
+- Gold: [dimension tables](sql/gold/dimension-tables.md), [fact tables](sql/gold/fact-tables.md), [stored procedures](sql/gold/stored-procedures.md), and [views](sql/gold/views.md)
+- Silver: [deterministic generation](sql/silver/deterministic-generation.md)
+- Technology: [target-specific standards](tech/README.md)
 
-1. Explicit client requirement or approved project override.
-2. Canonical Cooptimize standard from the approved default branch of this repository.
-3. Last-known-good canonical revision when the remote is temporarily unavailable.
-4. Bundled COOP reviewer fallback when no canonical revision has ever been synchronized.
+Bronze and Silver SQL are generated deterministically. Gold articles guide AI-assisted development. Incremental loading and general performance guidance live in separate knowledge bases.
 
-A project override applies only to that project. It does not modify this repository.
+### Power BI
 
-## Directive language
+- [Power BI overview](powerbi/README.md)
+- [Semantic models](powerbi/semantic-model/)
+- [Reports](powerbi/reports/)
 
-- `MUST` / `MUST NOT` — required policy.
-- `MAY` — explicitly permitted behavior.
+## How retrieval works
 
-Canonical policy does not use unresolved `SHOULD`, `PREFER`, `generally`, `maybe`, or `...?` language. Unsettled policy is omitted until approved.
+[standards.yml](standards.yml) maps each task to its required articles. Normative dependencies must be listed there directly; links between articles are for human navigation.
 
-## Live-policy behavior
+COOP uses one standards revision for the full task. The approved default branch is canonical, and the last known good revision remains available if synchronization fails.
 
-The approved default branch is the authoritative policy stream. Draft branches and open pull requests are not authoritative.
+## Rule language
 
-COOP must:
+- **MUST / MUST NOT:** required.
+- **MAY:** explicitly permitted.
+- Undecided policy is identified as non-normative or omitted until approved.
 
-- synchronize the canonical default branch automatically at startup when online;
-- re-check freshness before a standards-governed task when the last successful remote check is more than 15 minutes old;
-- make `coop sync` force an immediate standards refresh;
-- keep the last-known-good revision if refresh fails;
-- invalidate the standards retrieval index/cache when the canonical revision changes;
-- pin one exact standards commit for the duration of a task so generation and deterministic review use the same revision; and
-- expose the source repository, commit, effective file, and fallback state in diagnostics/provenance.
+Client requirements and approved project overrides take precedence within that project.
 
-A merged standards change therefore becomes available to isolated client COOP installations without reinstalling COOP. A task already in progress finishes against the revision it started with; the next task uses the newly synchronized revision.
+## Historical material
 
-## Security boundary
-
-This repository is policy content only. Synchronizing or reading it must never execute repository-provided scripts, hooks, binaries, prompts, skills, or arbitrary commands.
-
-## Change control
-
-Standards changes are reviewed as standards changes. TeamAI learnings and Incremental BI patterns do not automatically modify these files.
+[Deprecated standards](deprecation/README.md) are preserved for history. They are excluded from active retrieval and fallback policy.

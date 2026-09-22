@@ -1,4 +1,4 @@
-schema_version: 1
+schema_version: 2
 authority: formal_standard
 authoritative_ref: default_branch
 content_mode: markdown_only
@@ -16,11 +16,57 @@ refresh:
   invalidate_index_on_revision_change: true
 standards:
   sql:
-    path: standards/sql.md
-    section_refs: numeric
-  dax:
-    path: standards/dax.md
-    section_refs: numeric
-  semantic_model:
-    path: standards/semantic-model.md
-    section_refs: numeric
+    section_refs: file_and_heading
+    base:
+      - sql/formatting.md
+    layers:
+      silver:
+        base:
+          - sql/silver/deterministic-generation.md
+        artifacts: {}
+      gold:
+        base: []
+        artifacts:
+          stored_procedure:
+            - sql/gold/stored-procedures.md
+          fact_table:
+            - sql/gold/fact-tables.md
+          dimension_table:
+            - sql/gold/dimension-tables.md
+          view:
+            - sql/gold/views.md
+    targets:
+      fabric_warehouse:
+        - tech/fabric/warehouse.md
+      azure_sql: []
+  powerbi:
+    section_refs: file_and_heading
+    file_type:
+      - powerbi/file-types.md
+    semantic_model:
+      artifacts:
+        m_query:
+          - powerbi/semantic-model/m-query.md
+        table:
+          - powerbi/semantic-model/tables.md
+        fact_table:
+          - powerbi/semantic-model/m-query.md
+          - powerbi/semantic-model/tables.md
+          - powerbi/semantic-model/fact-tables.md
+          - powerbi/semantic-model/measures.md
+        relationship:
+          - powerbi/semantic-model/relationships.md
+        measure:
+          - powerbi/semantic-model/measures.md
+          - powerbi/semantic-model/dax.md
+        measure_table:
+          - powerbi/semantic-model/m-query.md
+          - powerbi/semantic-model/measures.md
+        dax_expression:
+          - powerbi/semantic-model/dax.md
+        composite_model:
+          - powerbi/semantic-model/composite-models.md
+    reports:
+      artifacts:
+        visual:
+          - powerbi/reports/visuals.md
