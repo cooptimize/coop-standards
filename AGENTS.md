@@ -10,8 +10,8 @@ Every machine running a shipped coop client resolves THIS repo through a pinned 
 - The three files under `standards/` are ASSEMBLED products — the only files clients read. They are built from the structured source articles; do not hand-edit them.
 - Retrieval is heading-based: the client splits the pinned file for the identified domain on `#{1..4}` headings and keeps up to 6 sections whose heading text matches task topic words. Therefore: (a) every article's `#` title must name its topic plainly (e.g. "Gold Stored Procedures", "Choosing a Power BI File Type"); (b) articles with distinctive, non-generic titles go EARLIER in the assembly order, or broad topic words crowd them out; (c) rules a retriever must apply independently need self-contained headings — see "Editing articles".
 - The structured source articles (`sql/`, `powerbi/`, `tech/`) carry YAML front matter for the future Azure AI Search design. Front matter is stripped during assembly and is invisible to shipped clients.
-- To change what clients enforce: edit the source article, re-run the assembly, verify (below), commit. Clients worldwide pick it up on their next `coop sync` — no release needed.
-- Verify before pushing: every Markdown path in `standards.yml` exists; assembly output is current; a sample prompt per domain retrieves the expected section.
+- To change what clients enforce: edit the source article, re-run the assembly (`python3 scripts/assemble.py`), verify (below), commit. Clients worldwide pick it up on their next `coop sync` — no release needed.
+- Verify before pushing: every Markdown path in `standards.yml` exists; `python3 scripts/assemble.py --check` reports the pinned files are current; a sample prompt per domain retrieves the expected section.
 
 ## Editing this file
 

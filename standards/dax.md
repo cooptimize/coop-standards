@@ -1,5 +1,6 @@
-<!-- ASSEMBLED from structured articles. Edit the article under sql/, powerbi/, or tech/,
-     then re-run the assembly (see AGENTS.md). Do not hand-edit sections here. -->
+<!-- ASSEMBLED from structured articles by scripts/assemble.py.
+     Edit the source article under sql/, powerbi/, or tech/ and re-run
+     `python3 scripts/assemble.py`. Do not hand-edit sections here. -->
 
 # DAX
 
