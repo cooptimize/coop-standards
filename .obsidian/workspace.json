@@ -186,6 +186,7 @@
   },
   "active": "850cc729b180f7c1",
   "lastOpenFiles": [
+    "powerbi/semantic-model/__rename_tables.md",
     "powerbi/semantic-model/dax.md",
     "powerbi/semantic-model/Tables.md",
     "powerbi/semantic-model/Relationships.md",
@@ -213,7 +214,6 @@
     "sql/formatting.md",
     "powerbi/file-types.md",
     "powerbi/README.md",
-    "powerbi/reports/README.md",
     "powerbi/reports",
     "powerbi/semantic-model",
     "powerbi",
