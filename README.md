@@ -1,41 +1,53 @@
 # Cooptimize Standards
 
-**Agents:** Read [AGENTS.md](AGENTS.md) before editing anything in this repository.
+**Agents:** Read [AGENTS.md](AGENTS.md) before editing this repository.
 
-This repository contains Cooptimize's approved development standards. It is organized for both humans and deterministic retrieval by COOP.
+This library defines how Cooptimize builds and reviews SQL and Power BI solutions. It gives developers, reviewers, and COOP one approved source for naming, structure, formatting, and design decisions.
 
-## Find a standard
+These articles describe expected output, not step-by-step implementation patterns. Client requirements and approved project standards override this library within that project. Incremental loading and general performance guidance live in separate knowledge bases.
 
-### SQL
+## SQL
 
-- [SQL overview](sql/README.md)
+### General
+
 - [Formatting](sql/formatting.md)
-- Gold: [dimension tables](sql/gold/dimension-tables.md), [fact tables](sql/gold/fact-tables.md), [stored procedures](sql/gold/stored-procedures.md), and [views](sql/gold/views.md)
-- Silver: [deterministic generation](sql/silver/deterministic-generation.md)
-- Technology: [target-specific standards](tech/README.md)
 
-Bronze and Silver SQL are generated deterministically. Gold articles guide AI-assisted development. Incremental loading and general performance guidance live in separate knowledge bases.
+### Silver
 
-### Power BI
+- [Deterministic generation](sql/silver/deterministic-generation.md)
 
-- [Power BI overview](powerbi/README.md)
-- [Semantic models](powerbi/semantic-model/)
-- [Reports](powerbi/reports/)
+### Gold
 
-## How retrieval works
+- [Dimension tables](sql/gold/dimension-tables.md)
+- [Fact tables](sql/gold/fact-tables.md)
+- [Stored procedures](sql/gold/stored-procedures.md)
+- [Views](sql/gold/views.md)
 
-[standards.yml](standards.yml) maps each task to its required articles. Normative dependencies must be listed there directly; links between articles are for human navigation.
+### Technology
 
-COOP uses one standards revision for the full task. The approved default branch is canonical, and the last known good revision remains available if synchronization fails.
+- [Fabric Warehouse](tech/fabric/warehouse.md)
 
-## Rule language
+## Power BI
 
-- **MUST / MUST NOT:** required.
-- **MAY:** explicitly permitted.
-- Undecided policy is identified as non-normative or omitted until approved.
+### General
 
-Client requirements and approved project overrides take precedence within that project.
+- [Choosing PBIX, PBIP, and PBIR](powerbi/file-types.md)
 
-## Historical material
+### Semantic models
 
-[Deprecated standards](deprecation/README.md) are preserved for history. They are excluded from active retrieval and fallback policy.
+- [M Query](powerbi/semantic-model/m-query.md)
+- [Tables](powerbi/semantic-model/tables.md)
+- [Fact measure and attribute tables](powerbi/semantic-model/fact-tables.md)
+- [Relationships](powerbi/semantic-model/relationships.md)
+- [Measures](powerbi/semantic-model/measures.md)
+- [DAX](powerbi/semantic-model/dax.md)
+- [Composite models](powerbi/semantic-model/composite-models.md)
+
+### Reports
+
+- [Visuals](powerbi/reports/visuals.md)
+
+## Repository
+
+- [Deterministic retrieval routes](standards.yml)
+- [Deprecated standards](deprecation/)

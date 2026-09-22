@@ -57,6 +57,8 @@ RETURN
 
 Use `CALCULATE` when the measure must change a report selection or use a different relationship.
 
+The next three examples assume the report is filtered to Blue and the measure asks for Red.
+
 ### Replace a selection
 
 If the report selects Blue, this expression ignores that selection and returns Red revenue:
@@ -83,7 +85,19 @@ Use `KEEPFILTERS` when the calculation must honor the report selection and add a
 
 ### Filter visible groups
 
-Use `FILTER` when the rule must test each currently visible group, evaluate a measure, or compare fields. This example keeps only visible months with profit:
+`FILTER(VALUES(...))` searches only the values visible in the report. Because only Blue is visible, it cannot find Red and returns `BLANK()`:
+
+```dax
+CALCULATE(
+    [Sales Amount],
+    FILTER(
+        VALUES(Product[Color]),
+        Product[Color] = "Red"
+    )
+)
+```
+
+Use `FILTER` when the rule must test each visible group, evaluate a measure, or compare fields. This example keeps only visible months with profit:
 
 ```dax
 CALCULATE(
@@ -95,7 +109,29 @@ CALCULATE(
 )
 ```
 
-`FILTER` and `Field = value` MUST NOT be treated as equivalent. Use `Field = value` for a direct replacement, `KEEPFILTERS(Field = value)` to require both selections, and `FILTER` for a row-by-row test.
+`FILTER` and `Field = value` MUST NOT be treated as equivalent. Use `Field = value` to replace the report selection, `KEEPFILTERS(Field = value)` to require both values, and `FILTER(VALUES(Field), ...)` to search only visible values. A `SUM`-based measure returns `BLANK()` for the empty result; it returns zero only when the base measure or another expression produces zero.
+
+### Remove selections
+
+`ALL(Product[Color])` removes only the Color selection. If the report selects Blue, this returns sales for all colors while retaining selections on other fields:
+
+```dax
+CALCULATE(
+    [Sales Amount],
+    ALL(Product[Color])
+)
+```
+
+`ALLEXCEPT(Product, Product[Brand])` removes every selection on Product except Brand. If the report selects Brand and Color, this retains Brand and returns sales for all colors and other product fields:
+
+```dax
+CALCULATE(
+    [Sales Amount],
+    ALLEXCEPT(Product, Product[Brand])
+)
+```
+
+Use `ALLEXCEPT` only when every other selection on that table is intentionally ignored.
 
 ### Use a different relationship
 
@@ -113,8 +149,6 @@ CALCULATE(
 - Do not use this behavior as an implicit lookup over duplicate rows.
 
 ## SUMMARIZE and SUMMARIZECOLUMNS
-
-There is no `SUMMARIZETABLE` function.
 
 - Use `SUMMARIZE` when a measure needs a grouped table built from a specific table or previously filtered table variable.
 - Use `SUMMARIZECOLUMNS` for a standalone DAX query that returns grouped model fields and measures.
@@ -166,3 +200,5 @@ Complex DAX MUST trigger a review of the underlying table grain, relationships, 
 - [Microsoft `AVERAGE` behavior](https://learn.microsoft.com/en-us/dax/average-function-dax)
 - [Microsoft `SUMMARIZE`](https://learn.microsoft.com/en-us/dax/summarize-function-dax)
 - [Microsoft `SUMMARIZECOLUMNS`](https://learn.microsoft.com/en-us/dax/summarizecolumns-function-dax)
+- [Microsoft `ALL`](https://learn.microsoft.com/en-us/dax/all-function-dax)
+- [Microsoft `ALLEXCEPT`](https://learn.microsoft.com/en-us/dax/allexcept-function-dax)

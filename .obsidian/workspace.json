@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "powerbi/semantic-model/dax.md",
+                "file": "README.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "dax"
+              "title": "README"
             }
           }
         ]
@@ -94,7 +94,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "powerbi/semantic-model/dax.md",
+                "file": "README.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -104,7 +104,7 @@
                 "unlinkedCollapsed": true
               },
               "icon": "links-coming-in",
-              "title": "Backlinks for dax"
+              "title": "Backlinks for README"
             }
           },
           {
@@ -113,12 +113,12 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "powerbi/semantic-model/dax.md",
+                "file": "README.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               },
               "icon": "links-going-out",
-              "title": "Outgoing links from dax"
+              "title": "Outgoing links from README"
             }
           },
           {
@@ -156,13 +156,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "powerbi/semantic-model/dax.md",
+                "file": "README.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Outline of dax"
+              "title": "Outline of README"
             }
           }
         ]
@@ -185,38 +185,38 @@
   },
   "active": "850cc729b180f7c1",
   "lastOpenFiles": [
-    "powerbi/semantic-model/composite-models.md",
-    "powerbi/semantic-model/dax.md",
+    "standards/sql.md",
+    "standards/semantic-model.md",
+    "standards/dax.md",
+    "sql/formatting.md",
     "powerbi/file-types.md",
-    "powerbi/semantic-model/relationships.md",
-    "powerbi/semantic-model/measures.md",
-    "powerbi/semantic-model/m-query.md",
+    "powerbi/README.md",
     "README.md",
+    "powerbi/reports/README.md",
+    "powerbi/semantic-model/m-query.md",
+    "powerbi/semantic-model/fact-tables.md",
+    "powerbi/semantic-model/dax.md",
+    "powerbi/semantic-model/composite-models.md",
+    "powerbi/semantic-model/measures.md",
+    "powerbi/semantic-model/relationships.md",
     "powerbi/semantic-model/tables.md",
     "powerbi/reports/visuals.md",
-    "powerbi/reports/README.md",
+    "AGENTS.md",
+    "tech/serverless/README.md",
+    "tech/fabric/warehouse.md",
+    "sql/silver/deterministic-generation.md",
     "powerbi/reports",
-    "powerbi/semantic-model/fact-tables.md",
     "powerbi/semantic-model",
-    "powerbi/README.md",
     "powerbi",
     "deprecation/powerbi/semantic-model.md",
     "deprecation/powerbi/dax.md",
     "deprecation/powerbi",
-    "AGENTS.md",
-    "sql/silver/deterministic-generation.md",
     "deprecation/tech/fabric/performance.md",
     "deprecation/tech/fabric",
     "deprecation/tech",
     "sql/gold/stored-procedures.md",
     "sql/README.md",
-    "sql/formatting.md",
     "sql/gold/fact-tables.md",
-    "sql/gold/views.md",
-    "sql/gold/dimension-tables.md",
-    "sql/gold/common.md",
-    "sql/gold/naming-considerations.md",
-    "sql/gold/tables.md",
     "tech/sqlserver",
     "tech/serverless",
     "tech/fabric",
