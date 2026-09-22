@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "README.md",
+                "file": "standards/sql.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "README"
+              "title": "sql"
             }
           }
         ]
@@ -94,7 +94,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "README.md",
+                "file": "standards/sql.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -104,7 +104,7 @@
                 "unlinkedCollapsed": true
               },
               "icon": "links-coming-in",
-              "title": "Backlinks for README"
+              "title": "Backlinks for sql"
             }
           },
           {
@@ -113,12 +113,12 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "README.md",
+                "file": "standards/sql.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               },
               "icon": "links-going-out",
-              "title": "Outgoing links from README"
+              "title": "Outgoing links from sql"
             }
           },
           {
@@ -156,13 +156,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "README.md",
+                "file": "standards/sql.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Outline of README"
+              "title": "Outline of sql"
             }
           }
         ]
@@ -180,46 +180,47 @@
       "daily-notes:Open today's daily note": false,
       "templates:Insert template": false,
       "command-palette:Open command palette": false,
-      "bases:Create new base": false
+      "bases:Create new base": false,
+      "publish:Publish changes...": false
     }
   },
   "active": "850cc729b180f7c1",
   "lastOpenFiles": [
+    "powerbi/semantic-model/dax.md",
+    "powerbi/semantic-model/Tables.md",
+    "powerbi/semantic-model/Relationships.md",
+    "powerbi/semantic-model/Measures.md",
+    "powerbi/semantic-model/M Query.md",
+    "powerbi/semantic-model/Fact Tables.md",
+    "powerbi/semantic-model/DAX.md",
+    "powerbi/semantic-model/Composite Models.md",
+    "powerbi/reports/Visuals.md",
+    "powerbi/File Types.md",
+    "tech/fabric/Fabric Warehouse.md",
+    "sql/gold/Views.md",
+    "sql/gold/Stored Procedures.md",
+    "sql/gold/Fact Tables.md",
+    "sql/gold/Dimension Tables.md",
+    "sql/silver/Overview.md",
+    "sql/SQL Formatting.md",
+    "scripts/assemble.py",
+    "scripts",
     "standards/sql.md",
+    "AGENTS.md",
     "standards/semantic-model.md",
     "standards/dax.md",
+    "README.md",
     "sql/formatting.md",
     "powerbi/file-types.md",
     "powerbi/README.md",
-    "README.md",
     "powerbi/reports/README.md",
-    "powerbi/semantic-model/m-query.md",
-    "powerbi/semantic-model/fact-tables.md",
-    "powerbi/semantic-model/dax.md",
-    "powerbi/semantic-model/composite-models.md",
-    "powerbi/semantic-model/measures.md",
-    "powerbi/semantic-model/relationships.md",
-    "powerbi/semantic-model/tables.md",
-    "powerbi/reports/visuals.md",
-    "AGENTS.md",
-    "tech/serverless/README.md",
-    "tech/fabric/warehouse.md",
-    "sql/silver/deterministic-generation.md",
     "powerbi/reports",
     "powerbi/semantic-model",
     "powerbi",
-    "deprecation/powerbi/semantic-model.md",
-    "deprecation/powerbi/dax.md",
     "deprecation/powerbi",
-    "deprecation/tech/fabric/performance.md",
     "deprecation/tech/fabric",
     "deprecation/tech",
-    "sql/gold/stored-procedures.md",
-    "sql/README.md",
-    "sql/gold/fact-tables.md",
     "tech/sqlserver",
-    "tech/serverless",
-    "tech/fabric",
-    "tech"
+    "tech/serverless"
   ]
 }

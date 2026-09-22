@@ -30,7 +30,8 @@ Every machine running a shipped coop client resolves THIS repo through a pinned 
 - Examples show the intended result; they do not add requirements beyond the article text. Keep only the syntax needed to demonstrate the rules. Indexes, migration notes, discussion lists, and policy placeholders do not require code samples.
 - Preserve the owner's meaning. Rewrite for clarity and consistency, but do not strengthen, weaken, or broaden a rule without explicit direction.
 - Use `MUST` and `MUST NOT` for requirements and `MAY` for explicit permission. Do not introduce unresolved `SHOULD`, `PREFER`, `generally`, `maybe`, or question-form policy.
-- Keep each article scoped to one layer, artifact, or technology. Put SQL presentation and structural conventions in `sql/formatting.md`, Gold artifact rules under `sql/gold/`, and technology-specific rules under `tech/`.
+- Keep each article scoped to one layer, artifact, or technology. Put SQL presentation and structural conventions in `sql/SQL Formatting.md`, Gold artifact rules under `sql/gold/`, and technology-specific rules under `tech/`.
+- Name maintained Markdown articles under `sql/`, `powerbi/`, and `tech/` with concise, human-readable title case because the filename is displayed in the index. Use spaces, preserve established abbreviations such as `DAX` and `SQL`, and use `Overview.md` for a folder-level introduction. Do not apply this rule to `standards/`, `deprecation/`, `AGENTS.md`, or the root `README.md`.
 - Put Power BI semantic-model rules under `powerbi/semantic-model/` and report rules under `powerbi/reports/`. Keep DAX expression rules separate from measure-object rules.
 - Keep Gold fact-table and dimension-table standards in separate articles. Do not create a generic Gold tables article or route; retrieval must select `fact_table` or `dimension_table` explicitly.
 - Keep developer standards separate from implementation patterns. Incremental loading, upsert recipes, and SCD implementation belong to the separate patterns knowledge base.
@@ -40,7 +41,7 @@ Every machine running a shipped coop client resolves THIS repo through a pinned 
 - When the owner has not decided a policy, identify it briefly in a clearly non-normative section of the closest applicable article. Do not create a separate considerations article or choose a convention on the owner's behalf.
 - Ask focused questions about unresolved decisions when working interactively. Update the article after the owner answers.
 - Bias SQL terminology and examples toward Dynamics 365 Finance and Operations schemas, such as `CustTable`, `dataareaid`, and `customerid`. Preserve source-system spelling for source fields. Do not turn an example-specific D365 F&O name into a universal requirement unless the owner approves it as policy.
-- Make every active SQL code sample conform to `sql/formatting.md`. When that article changes, update all active SQL examples; never alter examples under `deprecation/`.
+- Make every active SQL code sample conform to `sql/SQL Formatting.md`. When that article changes, update all active SQL examples; never alter examples under `deprecation/`.
 
 ## Article metadata
 

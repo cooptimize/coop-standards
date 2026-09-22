@@ -23,26 +23,26 @@ ROOT = pathlib.Path(__file__).resolve().parent.parent
 # titles go first, or broad topic words crowd them out of the 6-chunk budget.
 MAP = {
     "standards/sql.md": [
-        "sql/formatting.md",
-        "sql/silver/deterministic-generation.md",
-        "sql/gold/stored-procedures.md",
-        "sql/gold/fact-tables.md",
-        "sql/gold/dimension-tables.md",
-        "sql/gold/views.md",
-        "tech/fabric/warehouse.md",
+        "sql/SQL Formatting.md",
+        "sql/silver/Overview.md",
+        "sql/gold/Stored Procedures.md",
+        "sql/gold/Fact Tables.md",
+        "sql/gold/Dimension Tables.md",
+        "sql/gold/Views.md",
+        "tech/fabric/Fabric Warehouse.md",
     ],
     "standards/dax.md": [
-        "powerbi/semantic-model/dax.md",
-        "powerbi/semantic-model/measures.md",
+        "powerbi/semantic-model/DAX.md",
+        "powerbi/semantic-model/Measures.md",
     ],
     "standards/semantic-model.md": [
-        "powerbi/file-types.md",
-        "powerbi/reports/visuals.md",
-        "powerbi/semantic-model/m-query.md",
-        "powerbi/semantic-model/composite-models.md",
-        "powerbi/semantic-model/fact-tables.md",
-        "powerbi/semantic-model/relationships.md",
-        "powerbi/semantic-model/tables.md",
+        "powerbi/File Types.md",
+        "powerbi/reports/Visuals.md",
+        "powerbi/semantic-model/M Query.md",
+        "powerbi/semantic-model/Composite Models.md",
+        "powerbi/semantic-model/Fact Tables.md",
+        "powerbi/semantic-model/Relationships.md",
+        "powerbi/semantic-model/Tables.md",
     ],
 }
 

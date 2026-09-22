@@ -15,30 +15,9 @@ status: active
 - Qualify columns as `Table[Column]`; do not qualify measure references.
 - A single aggregation or measure reference MAY remain one expression.
 - Every other measure MUST use named `VAR` steps and `RETURN`.
-- Variable names MUST use descriptive lower camel case, such as `largeOrders` and `result`. They MUST NOT use a prefix.
+- Variable names MUST use descriptive camel case, such as `salesByOrder` and `result`. They MUST NOT use a prefix.
 - Split intermediate results into variables; do not nest `CALCULATE` inside `CALCULATE`.
 - Declare business-meaningful numeric and string literals as named variables. Arithmetic `0`, `1`, and `100`, plus `BLANK()`, `TRUE()`, and `FALSE()`, MAY remain inline.
-
-## Local filters
-
-When filtering fact rows without changing report selections:
-
-- isolate the filtered rows in a table variable;
-- aggregate with an explicit iterator such as `SUMX`, `COUNTX`, `MINX`, or `MAXX`; and
-- do not use `CALCULATE`.
-
-```dax
-VAR largeOrderQuantityThreshold = 10
-VAR largeOrders =
-    FILTER(
-        FactSales,
-        FactSales[Quantity] > largeOrderQuantityThreshold
-    )
-VAR result =
-    SUMX(largeOrders, FactSales[Revenue])
-RETURN
-    result
-```
 
 ## Averages
 
@@ -141,12 +120,6 @@ CALCULATE(
     USERELATIONSHIP(FactSales[FKShipDate], 'Date'[PKDate])
 )
 ```
-
-## Measures inside iterators
-
-- A measure called inside an iterator evaluates for that iterator's current row.
-- When this row-specific behavior is required, add a nearby comment explaining why.
-- Do not use this behavior as an implicit lookup over duplicate rows.
 
 ## SUMMARIZE and SUMMARIZECOLUMNS
 
