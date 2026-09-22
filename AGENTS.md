@@ -2,6 +2,17 @@
 
 This repository contains human-approved policy. Treat the article text as the product; do not infer new policy from common practice, vendor guidance, examples, or existing code.
 
+## Shipped-client contract (governs every edit today)
+
+Every machine running a shipped coop client resolves THIS repo through a pinned v1 authority contract compiled into the client. It is not negotiable by editing this repo, and violating it silently disables your edits on every client (they fail closed to the last valid revision):
+
+- `standards.yml` MUST keep `schema_version: 1`, the exact `authority` / `authoritative_ref` / `content_mode` / `precedence` / `refresh` scalar values, and a flat `standards:` map with EXACTLY three domains — `sql`, `dax`, `semantic_model` — whose `path` values are byte-exact `standards/sql.md`, `standards/dax.md`, `standards/semantic-model.md`. Never add domains, nesting, or front matter to `standards.yml`.
+- The three files under `standards/` are ASSEMBLED products — the only files clients read. They are built from the structured source articles; do not hand-edit them.
+- Retrieval is heading-based: the client splits the pinned file for the identified domain on `#{1..4}` headings and keeps up to 6 sections whose heading text matches task topic words. Therefore: (a) every article's `#` title must name its topic plainly (e.g. "Gold Stored Procedures", "Choosing a Power BI File Type"); (b) articles with distinctive, non-generic titles go EARLIER in the assembly order, or broad topic words crowd them out; (c) rules a retriever must apply independently need self-contained headings — see "Editing articles".
+- The structured source articles (`sql/`, `powerbi/`, `tech/`) carry YAML front matter for the future Azure AI Search design. Front matter is stripped during assembly and is invisible to shipped clients.
+- To change what clients enforce: edit the source article, re-run the assembly, verify (below), commit. Clients worldwide pick it up on their next `coop sync` — no release needed.
+- Verify before pushing: every Markdown path in `standards.yml` exists; assembly output is current; a sample prompt per domain retrieves the expected section.
+
 ## Editing this file
 
 - Update `AGENTS.md` when the owner approves a repository-wide rule for authoring, organizing, or validating standards articles.
@@ -41,6 +52,7 @@ This repository contains human-approved policy. Treat the article text as the pr
 
 ## Structure and routing
 
+- STATUS: the layered/nested route model below describes the target design (schema v2 + Azure AI Search) and is NOT what shipped clients execute. Until v2 ships, the flat three-domain v1 contract and assembly flow in "Shipped-client contract" above is authoritative; organize new articles under `sql/`, `powerbi/`, `tech/` and assemble them into the pinned files.
 - When adding, moving, or replacing an active article, update `standards.yml` so deterministic lookup selects the correct file.
 - Put every normative article dependency directly in the applicable `standards.yml` route. Do not rely on prose references between Markdown files for retrieval; use links only for human navigation or non-normative context.
 - A rule must live at the narrowest scope that fully covers it. Do not copy the same normative rule into several articles unless each copy is needed for an independently retrieved article.

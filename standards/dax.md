@@ -1,192 +1,262 @@
-# DAX Standards
+<!-- ASSEMBLED from structured articles. Edit the article under sql/, powerbi/, or tech/,
+     then re-run the assembly (see AGENTS.md). Do not hand-edit sections here. -->
 
-Canonical Cooptimize DAX policy. Existing numbered section identities are preserved so current `coop-dax-review` references remain stable.
+# DAX
 
-## Execution Model
+## Naming and structure
 
-- A measure that is a single aggregation or single measure reference MAY remain a single expression.
+- DAX MUST use consistent, readable formatting. DAX Formatter MAY be used.
+- Qualify columns as `Table[Column]`; do not qualify measure references.
+- A single aggregation or measure reference MAY remain one expression.
 - Every other measure MUST use named `VAR` steps and `RETURN`.
-- Routine local row filtering MUST use table variables plus explicit iterators.
-- `CALCULATE` MAY be used only for the three cases defined in section 30.
+- Variable names MUST use descriptive lower camel case, such as `largeOrders` and `result`. They MUST NOT use a prefix.
+- Split intermediate results into variables; do not nest `CALCULATE` inside `CALCULATE`.
+- Declare business-meaningful numeric and string literals as named variables. Arithmetic `0`, `1`, and `100`, plus `BLANK()`, `TRUE()`, and `FALSE()`, MAY remain inline.
 
-## 1. Naming Conventions
+## Local filters
 
-- Measures MUST use `[Category: Name]`, for example `[Sales: Total Revenue]`.
-- Calculated columns MUST use PascalCase.
-- Tables MUST use PascalCase.
-- Column references MUST include the table name: `Table[Column]`.
-- Measure references MUST NOT include a table prefix: `[Measure Name]`.
+When filtering fact rows without changing report selections:
 
-## 2. VAR / RETURN Structure
-
-A measure with more than one logical step MUST use `VAR` / `RETURN`. A single-expression core measure MAY omit `VAR` / `RETURN`.
-
-## 3. No Nested CALCULATE
-
-`CALCULATE` MUST NOT be nested inside another `CALCULATE`. Intermediate results MUST be split into variables.
-
-## 4. CALCULATE Filter Arguments
-
-When `CALCULATE` is justified under section 30:
-
-- boolean column predicates MUST be used when they can express the filter;
-- `FILTER(<table>, ...)` MUST NOT be passed as a filter argument when an equivalent boolean column predicate is sufficient; and
-- a filter predicate that replaces an outer filter MUST be used only when replacement is intentional.
-
-Routine local filtering that retains the existing report context is governed by section 28.
-
-## 5. KEEPFILTERS
-
-When a `CALCULATE` predicate must intersect with an existing filter on the same column instead of replacing it, the predicate MUST be wrapped in `KEEPFILTERS`.
-
-## 6. Star Schema
-
-Semantic models reviewed with these standards MUST use a star-schema shape unless an explicit client/project contract overrides it. Dimensions MUST be flat; relationship chains through intermediate dimension tables MUST NOT be introduced as the default model shape.
-
-## 7. Bidirectional Relationships
-
-Physical bidirectional relationships MUST NOT be the default. When a measure requires temporary bidirectional propagation, it MUST use targeted `CROSSFILTER` inside that measure unless an explicit project override requires a physical bidirectional relationship.
-
-## 8. Marked Date Table
-
-Time-intelligence logic MUST use one contiguous marked Date table.
-
-## 9. Context Transition
-
-- Context transition MUST NOT be relied on accidentally.
-- A measure reference inside an iterator that intentionally causes row-to-filter context transition MUST be treated under sections 30 and 32.
-- Context transition over a non-unique/duplicate-row table MUST NOT be used as an implicit lookup mechanism.
-
-## 10. Measure Authoring Workflow
-
-Before writing a measure, the author MUST establish:
-
-1. the business definition and evaluation grain;
-2. which report filters the result must respect or ignore; and
-3. whether marked-Date-table logic is required.
-
-Measure logic MUST be built and tested incrementally rather than expanded before the prior step is validated.
-
-## 11. Measure Validation
-
-Before a measure is accepted, validate:
-
-- the unfiltered/base result;
-- behavior with and without relevant slicers;
-- blank, zero, and no-row cases; and
-- a known control total when one exists.
-
-## 13. Deployment Validation
-
-- Direct Lake models MUST NOT introduce calculated columns where Direct Lake does not support them.
-- Direct Lake source table names MUST match the source exactly.
-- Semantic-model source intended for deployment MUST use TMDL rather than TMSL.
-
-## 14. Division
-
-Division MUST use `DIVIDE()` instead of `/`.
-
-## 15. Measure Format Strings
-
-Every visible measure MUST declare an explicit `formatString`.
-
-## 16. Relationship Key Types
-
-Relationship key columns MUST use exact numeric types such as `int64` or `decimal`. Relationship keys MUST NOT use floating-point `double`.
-
-## 17. Hide Foreign Keys
-
-Relationship key columns on the many side MUST be hidden from report view.
-
-## 18. Key Summarization
-
-Numeric relationship key columns MUST set `summarizeBy: none`.
-
-## 20. Explicit Measures
-
-Business aggregations MUST be exposed as explicit measures. Visible numeric columns that are not intended for direct aggregation MUST be hidden or set to `summarizeBy: none`.
-
-## 21. Auto Date/Time
-
-Power BI auto date/time MUST be disabled. `LocalDateTable_*` and `DateTableTemplate_*` auto-generated tables MUST NOT remain in the governed model.
-
-## 22. EARLIER / EARLIEST
-
-New DAX MUST NOT use `EARLIER` or `EARLIEST`. The required outer-row value MUST be captured in a variable before entering the inner row context.
-
-## 23. Inactive Relationships
-
-Every inactive relationship MUST be activated by at least one intentional `USERELATIONSHIP()` use. An inactive relationship with no consumer MUST be removed.
-
-## 24. IFERROR
-
-Arithmetic MUST NOT be wrapped in `IFERROR`. Use `DIVIDE()` for divide-by-zero handling and explicit input tests for expected blank conditions.
-
-## 25. Measure Descriptions
-
-Every visible measure MUST have a description. Hidden helper measures MAY omit descriptions.
-
-## 27. Variable Names
-
-Every local variable MUST use one leading underscore, for example `VAR _Result`.
-
-## 28. Routine Local Filters
-
-A routine local filter is a row/data predicate that does not intentionally replace report filter state, alter a relationship, or perform context transition.
-
-For routine local filters:
-
-- filtering MUST be isolated in a table variable;
-- aggregation MUST use an explicit iterator such as `SUMX`, `COUNTX`, `AVERAGEX`, `MINX`, or `MAXX`; and
-- `CALCULATE` MUST NOT be used.
+- isolate the filtered rows in a table variable;
+- aggregate with an explicit iterator such as `SUMX`, `COUNTX`, `MINX`, or `MAXX`; and
+- do not use `CALCULATE`.
 
 ```dax
-VAR _LargeOrderQuantityThreshold = 10
-VAR _LargeOrders =
+VAR largeOrderQuantityThreshold = 10
+VAR largeOrders =
     FILTER(
         FactSales,
-        FactSales[Quantity] > _LargeOrderQuantityThreshold
+        FactSales[Quantity] > largeOrderQuantityThreshold
     )
-VAR _Result =
-    SUMX(_LargeOrders, FactSales[Revenue])
+VAR result =
+    SUMX(largeOrders, FactSales[Revenue])
 RETURN
-    _Result
+    result
 ```
 
-## 29. No Gratuitous CALCULATE
+## Averages
 
-`CALCULATE` MUST NOT wrap a scalar expression or aggregation when no filter-state, relationship/security, or context-transition behavior is required.
+- `AVERAGE()` and `AVERAGEX()` MUST NOT be used because their denominators are implicit.
+- Define the business numerator and denominator separately, then use `DIVIDE()`.
 
-## 30. The Three Allowed CALCULATE Uses
+```dax
+VAR numerator = SUM(FactSales[Revenue])
+VAR denominator = SUM(FactSales[Quantity])
+VAR result = DIVIDE(numerator, denominator)
+RETURN
+    result
+```
 
-`CALCULATE` MAY be used only for one or more of these purposes:
+## CALCULATE
 
-1. **Filter-state override** - deliberate manipulation of active visual/page/report filter state, including time-intelligence date-context replacement.
-2. **Relationship/security override** - `USERELATIONSHIP`, `CROSSFILTER`, or another deliberate relationship/security propagation change.
-3. **Deliberate context transition** - row-to-filter transition where the transition itself is required by the calculation.
+Use `CALCULATE` when the measure must change a report selection or use a different relationship.
 
-If none applies, section 28 governs the filter/aggregation shape.
+The next three examples assume the report is filtered to Blue and the measure asks for Red.
 
-## 31. Business Literals
+### Replace a selection
 
-A numeric or string literal that carries business meaning MUST be declared as a named variable before use.
+If the report selects Blue, this expression ignores that selection and returns Red revenue:
 
-The literals `0`, `1`, and `100` MAY remain inline when they are used only for ordinary arithmetic. `BLANK()`, `TRUE()`, and `FALSE()` are not treated as business literals.
+```dax
+CALCULATE(
+    [Sales Amount],
+    Product[Color] = "Red"
+)
+```
 
-## 32. Intentional Context Transition
+### Require both selections
 
-A measure reference or single-argument `CALCULATE` inside an iterator MUST NOT create an accidental context transition.
+If the report selects Blue, this expression returns blank because a product cannot be both Blue and Red:
 
-If per-row context transition is required:
+```dax
+CALCULATE(
+    [Sales Amount],
+    KEEPFILTERS(Product[Color] = "Red")
+)
+```
 
-- it MUST fall under section 30 case 3; and
-- a nearby comment MUST state that the context transition is intentional.
+Use `KEEPFILTERS` when the calculation must honor the report selection and add another requirement to the same field.
 
-## 26. References (Non-Normative)
+### Filter visible groups
 
-- Microsoft Fabric Skills for GitHub Copilot: <https://github.com/microsoft/skills-for-fabric>
-- Microsoft Fabric Semantic Model Authoring: <https://github.com/microsoft/skills-for-fabric/tree/main/skills/semantic-model-authoring>
-- Microsoft Fabric DAX Guidelines: <https://github.com/microsoft/skills-for-fabric/tree/main/skills/semantic-model-authoring/references/dax-guidelines.md>
-- Microsoft Fabric Direct Lake Guidelines: <https://github.com/microsoft/skills-for-fabric/tree/main/skills/semantic-model-authoring/references/direct-lake-guidelines.md>
-- Greg Deckler, *DAX for Humans* (2025)
-- SQLBI: <https://www.sqlbi.com>
+`FILTER(VALUES(...))` searches only the values visible in the report. Because only Blue is visible, it cannot find Red and returns `BLANK()`:
+
+```dax
+CALCULATE(
+    [Sales Amount],
+    FILTER(
+        VALUES(Product[Color]),
+        Product[Color] = "Red"
+    )
+)
+```
+
+Use `FILTER` when the rule must test each visible group, evaluate a measure, or compare fields. This example keeps only visible months with profit:
+
+```dax
+CALCULATE(
+    [Sales Amount],
+    FILTER(
+        VALUES('Date'[Month]),
+        [Sales Profit] > 0
+    )
+)
+```
+
+`FILTER` and `Field = value` MUST NOT be treated as equivalent. Use `Field = value` to replace the report selection, `KEEPFILTERS(Field = value)` to require both values, and `FILTER(VALUES(Field), ...)` to search only visible values. A `SUM`-based measure returns `BLANK()` for the empty result; it returns zero only when the base measure or another expression produces zero.
+
+### Remove selections
+
+`ALL(Product[Color])` removes only the Color selection. If the report selects Blue, this returns sales for all colors while retaining selections on other fields:
+
+```dax
+CALCULATE(
+    [Sales Amount],
+    ALL(Product[Color])
+)
+```
+
+`ALLEXCEPT(Product, Product[Brand])` removes every selection on Product except Brand. If the report selects Brand and Color, this retains Brand and returns sales for all colors and other product fields:
+
+```dax
+CALCULATE(
+    [Sales Amount],
+    ALLEXCEPT(Product, Product[Brand])
+)
+```
+
+Use `ALLEXCEPT` only when every other selection on that table is intentionally ignored.
+
+### Use a different relationship
+
+```dax
+CALCULATE(
+    [Sales Amount],
+    USERELATIONSHIP(FactSales[FKShipDate], 'Date'[PKDate])
+)
+```
+
+## Measures inside iterators
+
+- A measure called inside an iterator evaluates for that iterator's current row.
+- When this row-specific behavior is required, add a nearby comment explaining why.
+- Do not use this behavior as an implicit lookup over duplicate rows.
+
+## SUMMARIZE and SUMMARIZECOLUMNS
+
+- Use `SUMMARIZE` when a measure needs a grouped table built from a specific table or previously filtered table variable.
+- Use `SUMMARIZECOLUMNS` for a standalone DAX query that returns grouped model fields and measures.
+- Use `VALUES(Column)` when only one distinct field is required.
+- Group only at the business grain required by the calculation.
+
+```dax
+VAR salesByOrder =
+    SUMMARIZE(
+        FactSales,
+        FactSales[SalesOrder],
+        "salesAmount", [Sales Amount]
+    )
+VAR result =
+    SUMX(salesByOrder, [salesAmount])
+RETURN
+    result
+```
+
+```dax
+EVALUATE
+SUMMARIZECOLUMNS(
+    'Date'[FiscalYear],
+    Customer[CustomerGroup],
+    "salesAmount", [Sales Amount]
+)
+```
+
+## Totals
+
+- Validate detail rows, subtotals, and grand totals separately. Power BI recalculates a total for the whole total row; it does not automatically add the visible rows above it.
+- When the business definition requires summing row-level results, define the required grain explicitly and use an iterator over that grain.
+
+## Functions
+
+- Use `DIVIDE()` instead of `/`.
+- Do not use `EARLIER` or `EARLIEST`; capture the outer-row value in a variable.
+- Do not wrap arithmetic in `IFERROR`; use `DIVIDE()` or explicit tests for expected blank conditions.
+
+## Model-first review
+
+Complex DAX MUST trigger a review of the underlying table grain, relationships, and source transformations before more logic is added. Stable joins and row-level business transformations belong in the model or source layer when the complexity is caused by model structure.
+
+## References (non-normative)
+
+- [Microsoft DAX `VAR` syntax and identifier rules](https://learn.microsoft.com/en-us/dax/var-dax)
+- [Microsoft: avoid using `FILTER` as a `CALCULATE` filter argument](https://learn.microsoft.com/en-us/dax/best-practices/dax-avoid-avoid-filter-as-filter-argument)
+- [Microsoft `KEEPFILTERS` behavior](https://learn.microsoft.com/en-us/dax/keepfilters-function-dax)
+- [Microsoft `AVERAGE` behavior](https://learn.microsoft.com/en-us/dax/average-function-dax)
+- [Microsoft `SUMMARIZE`](https://learn.microsoft.com/en-us/dax/summarize-function-dax)
+- [Microsoft `SUMMARIZECOLUMNS`](https://learn.microsoft.com/en-us/dax/summarizecolumns-function-dax)
+- [Microsoft `ALL`](https://learn.microsoft.com/en-us/dax/all-function-dax)
+- [Microsoft `ALLEXCEPT`](https://learn.microsoft.com/en-us/dax/allexcept-function-dax)
+
+# Measures
+
+## Naming and placement
+
+- Name a base measure for the business value it returns, such as `[Sales Amount]` or `[Sales Quantity]`.
+- Every model MUST contain an `Ad Hoc Calculations` table for report-authored measures.
+- Put measures spanning more than one fact in `Multi-fact {Data Model Name} Measures`.
+- Hide the technical `Calculation` field in measure tables.
+- Name a filtered measure `{Base Measure} | {Filter}`, such as `[Sales Amount | Intercompany]`.
+- A filtered measure MUST reference its base measure instead of duplicating the aggregation.
+
+```dax
+[Sales Amount | Intercompany] =
+VAR result =
+    CALCULATE(
+        [Sales Amount],
+        KEEPFILTERS(Customer[Intercompany] = TRUE())
+    )
+RETURN
+    result
+```
+
+## Base measures
+
+An additive base measure MUST use `SUM(Table[NumberField])`.
+
+```dax
+[Sales Amount] = SUM('Sales Transactions'[SalesAmount])
+```
+
+## SQL or DAX
+
+Use this placement default:
+
+- Default organization-certified calculations to Gold SQL when they are used, or are expected to be used, by multiple semantic models.
+- Otherwise, implement the calculation in DAX. Model-specific filtered measures MUST remain DAX measures built from a base measure.
+
+## Visibility and descriptions
+
+- Expose business aggregations as explicit measures.
+- Hide visible numeric columns not intended for direct aggregation or set them to `summarizeBy: none`.
+- Every visible measure MUST have a description. Hidden helper measures MAY omit one.
+
+## Formats
+
+- Every visible measure MUST declare an explicit `formatString`.
+- Whole numbers MUST default to `#,###`.
+- Percentages MUST use `##%` unless a project-specific format overrides it.
+- Currency MUST use `"$ #,0;–$ #,0;$ 0;--"` unless a project-specific format overrides it.
+- Numeric-measure formats MUST align commas and decimal points within the visual.
+- When parenthesized negative currency or percentage values require alignment, use a dynamic format with a non-breaking space and regular Segoe UI. Do not use an ordinary trailing space or bold/semibold variants.
+
+```dax
+"$ #,0" & UNICHAR(160) & ";$ (#,0);$ 0" & UNICHAR(160)
+```
+
+## Authoring and validation
+
+Before authoring a measure, establish its business definition, evaluation grain, required filter behavior, and date-table requirements.
+
+Build and test measure logic incrementally before expanding it.
+
+Validate the base result, relevant slicers, blank/zero/no-row cases, and a known control total when available.
