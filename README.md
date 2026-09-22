@@ -45,6 +45,8 @@ These articles describe expected output, not step-by-step implementation pattern
 
 ### Reports
 
+- [App Deployment](<Power BI/Reports/App Deployment.md>)
+- [Page Formatting](<Power BI/Reports/Page Formatting.md>)
 - [Visuals](<Power BI/Reports/Visuals.md>)
 
 ## Repository

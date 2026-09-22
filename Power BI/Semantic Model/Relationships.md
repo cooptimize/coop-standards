@@ -17,8 +17,8 @@ status: active
 
 ## Keys
 
-- Relationship key columns MUST use exact numeric types such as `int64` or `decimal`, not floating-point `double`.
-- Hide relationship keys on the many side from report view.
+- Relationship key columns MUST use exact numeric types `int64`.
+- Hide relationship keys.
 - Set numeric relationship keys to `summarizeBy: none`.
 
 ## Filter direction

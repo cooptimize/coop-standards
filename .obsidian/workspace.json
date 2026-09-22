@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "standards/sql.md",
+                "file": "Power BI/Reports/Visuals.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "sql"
+              "title": "Visuals"
             }
           }
         ]
@@ -94,7 +94,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "standards/sql.md",
+                "file": "Power BI/Reports/Visuals.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -104,7 +104,7 @@
                 "unlinkedCollapsed": true
               },
               "icon": "links-coming-in",
-              "title": "Backlinks for sql"
+              "title": "Backlinks for Visuals"
             }
           },
           {
@@ -113,12 +113,12 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "standards/sql.md",
+                "file": "Power BI/Reports/Visuals.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               },
               "icon": "links-going-out",
-              "title": "Outgoing links from sql"
+              "title": "Outgoing links from Visuals"
             }
           },
           {
@@ -156,13 +156,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "standards/sql.md",
+                "file": "Power BI/Reports/Visuals.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Outline of sql"
+              "title": "Outline of Visuals"
             }
           }
         ]
@@ -186,25 +186,29 @@
   },
   "active": "850cc729b180f7c1",
   "lastOpenFiles": [
+    "Power BI/Reports/App Deployment.md",
+    "Power BI/Reports/Visuals.md",
+    "Power BI/Reports/Page Formatting.md",
+    "Power BI/File Types.md",
+    "Power BI/Semantic Model/Tables.md",
+    "Power BI/Semantic Model/Relationships.md",
+    "Power BI/Semantic Model/Measures.md",
+    "Power BI/Semantic Model/M Query.md",
+    "SQL/SQL Formatting.md",
+    "standards/sql.md",
     "Technology/Fabric/Fabric Warehouse.md",
     "Technology/Fabric",
     "Technology/sqlserver",
     "Technology/serverless",
     "Technology/__rename_fabric",
     "Technology",
-    "Power BI/Reports/Visuals.md",
     "Power BI/Reports",
     "Power BI/reports/Visuals.md",
-    "Power BI/Semantic Model/Tables.md",
-    "Power BI/Semantic Model/Relationships.md",
-    "Power BI/Semantic Model/Measures.md",
-    "Power BI/Semantic Model/M Query.md",
     "Power BI/Semantic Model/Fact Tables.md",
     "Power BI/Semantic Model/DAX.md",
     "Power BI/Semantic Model/Composite Models.md",
     "Power BI/reports",
     "Power BI/Semantic Model",
-    "Power BI/File Types.md",
     "Power BI",
     "SQL/Silver/Overview.md",
     "SQL/Silver",
@@ -213,14 +217,10 @@
     "SQL/Gold/Stored Procedures.md",
     "SQL/Gold/Fact Tables.md",
     "SQL/Gold/Dimension Tables.md",
-    "SQL/SQL Formatting.md",
     "powerbi/semantic-model/__rename_tables.md",
     "powerbi/semantic-model/dax.md",
     "powerbi/semantic-model/Tables.md",
     "powerbi/semantic-model/Relationships.md",
-    "powerbi/semantic-model/Measures.md",
-    "powerbi/semantic-model/M Query.md",
-    "powerbi/semantic-model/Fact Tables.md",
-    "powerbi/semantic-model/DAX.md"
+    "powerbi/semantic-model/Measures.md"
   ]
 }

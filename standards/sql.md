@@ -354,7 +354,7 @@ These persisted-column restrictions MUST NOT be applied to Azure SQL targets. `c
 
 ## Persisted expression types
 
-CTAS projections MUST explicitly cast expressions whose resulting type must be controlled, including aggregate outputs used as persisted columns.
+CTAS projections MUST explicitly cast expressions whose resulting type must be controlled, including aggregate outputs used as persisted columns. 
 
 ## Connections
 

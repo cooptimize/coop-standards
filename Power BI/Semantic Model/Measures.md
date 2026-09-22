@@ -55,7 +55,7 @@ Use this placement default:
 - Every visible measure MUST declare an explicit `formatString`.
 - Whole numbers MUST default to `#,###`.
 - Percentages MUST use `##%` unless a project-specific format overrides it.
-- Currency MUST use `"$ #,0;–$ #,0;$ 0;--"` unless a project-specific format overrides it.
+- Currency MUST use `"$ #,0;-$ #,0;$ 0;--"` unless a project-specific format overrides it.
 - Numeric-measure formats MUST align commas and decimal points within the visual.
 - When parenthesized negative currency or percentage values require alignment, use a dynamic format with a non-breaking space and regular Segoe UI. Do not use an ordinary trailing space or bold/semibold variants.
 

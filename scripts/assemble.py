@@ -37,6 +37,8 @@ MAP = {
     ],
     "standards/semantic-model.md": [
         "Power BI/File Types.md",
+        "Power BI/Reports/App Deployment.md",
+        "Power BI/Reports/Page Formatting.md",
         "Power BI/Reports/Visuals.md",
         "Power BI/Semantic Model/M Query.md",
         "Power BI/Semantic Model/Composite Models.md",

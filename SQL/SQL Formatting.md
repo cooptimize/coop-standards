@@ -30,13 +30,13 @@ status: active
 ## Joins
 
 - Only `INNER JOIN` and `LEFT JOIN` MAY be used. Bare `JOIN`, `RIGHT JOIN`, and `FULL OUTER JOIN` MUST NOT be used.
-- Order multi-column join predicates from the broadest key to the most specific. For D365 F&O, place `dataareaid` first.
+- Order multi-column join predicates from the broadest key to the most specific. For D365 F&O, place `dataareaid` first. 
 - In each join predicate, place the source-table expression first and the joined-table expression second.
 - `ON` clauses MUST contain only relationship predicates; `CASE` expressions and filter functions MUST NOT appear in them.
 
 ## EXISTS
 
-- `EXISTS` and `NOT EXISTS` MAY be used.
+- `EXISTS` and `NOT EXISTS` MAY be used. 
 - Each use MUST have a comment stating the tested condition and why it is used.
 
 ## Example
