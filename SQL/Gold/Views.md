@@ -16,11 +16,12 @@ status: active
 
 ## Field organization
 
+- Every projected field MUST use a bracketed alias, including fields whose output name is unchanged.
 - Organize dimension views under `--Keys` and `--Attributes`.
 - Organize fact views under `--Keys`, `--Attributes`, and `--Numbers`.
-- Every fact view MUST include `NULL AS FKNULL` under `--Keys`.
+- Every fact view MUST include `NULL AS [FKNULL]` under `--Keys`.
 - `--Numbers` MUST contain additive fact fields intended for `SUM`.
-- Keys and numbers MUST retain their source names without aliases.
+- Keys and numbers MUST retain their source names through same-name aliases.
 - Attributes MUST use friendly aliases with spaces, such as `CustomerName AS [Customer Name]`.
 
 ## Additional dimension fields
@@ -46,7 +47,7 @@ status: active
 CREATE VIEW sales.Customer AS
 SELECT
     --Keys
-      cust.PKCustomer
+      cust.PKCustomer AS [PKCustomer]
 
     --Attributes
      ,cust.CustomerName AS [Customer Name]
@@ -61,15 +62,15 @@ FROM dim.Customer AS cust;
 CREATE VIEW sales.Sales AS
 SELECT
     --Keys
-      NULL AS FKNULL
-     ,sales.FKCustomer
-     ,sales.FKDate
+      NULL AS [FKNULL]
+     ,sales.FKCustomer AS [FKCustomer]
+     ,sales.FKDate AS [FKDate]
 
     --Attributes
      ,sales.SalesOrder AS [Sales Order]
 
     --Numbers
-     ,sales.SalesAmount
-     ,sales.Quantity
+     ,sales.SalesAmount AS [SalesAmount]
+     ,sales.Quantity AS [Quantity]
 FROM fact.Sales AS sales;
 ```

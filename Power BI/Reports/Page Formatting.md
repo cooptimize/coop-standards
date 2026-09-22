@@ -16,9 +16,9 @@ status: active
 
 ## Page
 
-- Page size MUST use the built-in `16:9` format.
-- Page background MUST be very light gray.
-- Canvas background MUST be a slightly darker gray than the page background.
+- Page size defaults to use the built-in `16:9` HD format (1920x1080)
+- Page background defaults to very light gray.
+- Canvas background defaults to a slightly darker gray than the page background.
 
 ## Visuals
 

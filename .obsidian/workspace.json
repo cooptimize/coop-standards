@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Power BI/Semantic Model/Fact Tables.md",
+                "file": "SQL/SQL Formatting.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Fact Tables"
+              "title": "SQL Formatting"
             }
           }
         ]
@@ -94,7 +94,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Power BI/Semantic Model/Fact Tables.md",
+                "file": "SQL/SQL Formatting.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -104,7 +104,7 @@
                 "unlinkedCollapsed": true
               },
               "icon": "links-coming-in",
-              "title": "Backlinks for Fact Tables"
+              "title": "Backlinks for SQL Formatting"
             }
           },
           {
@@ -113,12 +113,12 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Power BI/Semantic Model/Fact Tables.md",
+                "file": "SQL/SQL Formatting.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               },
               "icon": "links-going-out",
-              "title": "Outgoing links from Fact Tables"
+              "title": "Outgoing links from SQL Formatting"
             }
           },
           {
@@ -156,13 +156,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Power BI/Semantic Model/Fact Tables.md",
+                "file": "SQL/SQL Formatting.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Outline of Fact Tables"
+              "title": "Outline of SQL Formatting"
             }
           }
         ]
@@ -186,10 +186,13 @@
   },
   "active": "850cc729b180f7c1",
   "lastOpenFiles": [
-    "Power BI/Semantic Model/Organizing Tables.md",
+    "SQL/Silver/Overview.md",
+    "Power BI/Semantic Model/Composite Models.md",
     "Power BI/Reports/Visuals.md",
-    "Power BI/Reports/App Deployment.md",
     "Power BI/Reports/Page Formatting.md",
+    "Power BI/Semantic Model/Fact Tables.md",
+    "Power BI/Semantic Model/Organizing Tables.md",
+    "Power BI/Reports/App Deployment.md",
     "Power BI/File Types.md",
     "Power BI/Semantic Model/Tables.md",
     "Power BI/Semantic Model/Relationships.md",
@@ -205,13 +208,10 @@
     "Technology",
     "Power BI/Reports",
     "Power BI/reports/Visuals.md",
-    "Power BI/Semantic Model/Fact Tables.md",
     "Power BI/Semantic Model/DAX.md",
-    "Power BI/Semantic Model/Composite Models.md",
     "Power BI/reports",
     "Power BI/Semantic Model",
     "Power BI",
-    "SQL/Silver/Overview.md",
     "SQL/Silver",
     "SQL/silver/Overview.md",
     "SQL/Gold/Views.md",

@@ -76,10 +76,10 @@ INSERT INTO fact.Sales
      ,SalesAmount
 )
 SELECT
-      fs.PKCustomer AS FKCustomer
-     ,fs.custaccount AS Customer
-     ,fs.salesid AS SalesOrder
-     ,fs.lineamount AS SalesAmount
+      fs.PKCustomer AS [FKCustomer]
+     ,fs.custaccount AS [Customer]
+     ,fs.salesid AS [SalesOrder]
+     ,fs.lineamount AS [SalesAmount]
 FROM #FinalSales AS fs;
 ```
 
@@ -97,7 +97,7 @@ BEGIN TRANSACTION;
 TRUNCATE TABLE fact.Sales;
 
 INSERT INTO fact.Sales (SalesAmount)
-SELECT fs.lineamount AS SalesAmount
+SELECT fs.lineamount AS [SalesAmount]
 FROM #FinalSales AS fs;
 
 COMMIT TRANSACTION;
