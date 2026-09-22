@@ -10,42 +10,42 @@ These articles describe expected output, not step-by-step implementation pattern
 
 ### General
 
-- [SQL Formatting](<sql/SQL Formatting.md>)
+- [SQL Formatting](<SQL/SQL Formatting.md>)
 
 ### Silver
 
-- [Overview](sql/silver/Overview.md)
+- [Overview](SQL/Silver/Overview.md)
 
 ### Gold
 
-- [Dimension Tables](<sql/gold/Dimension Tables.md>)
-- [Fact Tables](<sql/gold/Fact Tables.md>)
-- [Stored Procedures](<sql/gold/Stored Procedures.md>)
-- [Views](sql/gold/Views.md)
+- [Dimension Tables](<SQL/Gold/Dimension Tables.md>)
+- [Fact Tables](<SQL/Gold/Fact Tables.md>)
+- [Stored Procedures](<SQL/Gold/Stored Procedures.md>)
+- [Views](SQL/Gold/Views.md)
 
 ### Technology
 
-- [Fabric Warehouse](<tech/fabric/Fabric Warehouse.md>)
+- [Fabric Warehouse](<Technology/Fabric/Fabric Warehouse.md>)
 
 ## Power BI
 
 ### General
 
-- [File Types](<powerbi/File Types.md>)
+- [File Types](<Power BI/File Types.md>)
 
 ### Semantic models
 
-- [M Query](<powerbi/semantic-model/M Query.md>)
-- [Tables](powerbi/semantic-model/Tables.md)
-- [Fact Tables](<powerbi/semantic-model/Fact Tables.md>)
-- [Relationships](powerbi/semantic-model/Relationships.md)
-- [Measures](powerbi/semantic-model/Measures.md)
-- [DAX](powerbi/semantic-model/DAX.md)
-- [Composite Models](<powerbi/semantic-model/Composite Models.md>)
+- [M Query](<Power BI/Semantic Model/M Query.md>)
+- [Tables](<Power BI/Semantic Model/Tables.md>)
+- [Fact Tables](<Power BI/Semantic Model/Fact Tables.md>)
+- [Relationships](<Power BI/Semantic Model/Relationships.md>)
+- [Measures](<Power BI/Semantic Model/Measures.md>)
+- [DAX](<Power BI/Semantic Model/DAX.md>)
+- [Composite Models](<Power BI/Semantic Model/Composite Models.md>)
 
 ### Reports
 
-- [Visuals](powerbi/reports/Visuals.md)
+- [Visuals](<Power BI/Reports/Visuals.md>)
 
 ## Repository
 

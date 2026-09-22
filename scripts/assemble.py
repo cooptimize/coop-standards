@@ -4,7 +4,7 @@
 Shipped coop clients read ONLY the three v1-pinned files (standards/sql.md,
 standards/dax.md, standards/semantic-model.md) and retrieve sections by
 heading match. This script rebuilds those files from the source articles
-under sql/, powerbi/, and tech/. Never hand-edit the pinned files.
+under SQL/, Power BI/, and Technology/. Never hand-edit the pinned files.
 
 Usage:
     python3 scripts/assemble.py          # rebuild the pinned files
@@ -23,32 +23,32 @@ ROOT = pathlib.Path(__file__).resolve().parent.parent
 # titles go first, or broad topic words crowd them out of the 6-chunk budget.
 MAP = {
     "standards/sql.md": [
-        "sql/SQL Formatting.md",
-        "sql/silver/Overview.md",
-        "sql/gold/Stored Procedures.md",
-        "sql/gold/Fact Tables.md",
-        "sql/gold/Dimension Tables.md",
-        "sql/gold/Views.md",
-        "tech/fabric/Fabric Warehouse.md",
+        "SQL/SQL Formatting.md",
+        "SQL/Silver/Overview.md",
+        "SQL/Gold/Stored Procedures.md",
+        "SQL/Gold/Fact Tables.md",
+        "SQL/Gold/Dimension Tables.md",
+        "SQL/Gold/Views.md",
+        "Technology/Fabric/Fabric Warehouse.md",
     ],
     "standards/dax.md": [
-        "powerbi/semantic-model/DAX.md",
-        "powerbi/semantic-model/Measures.md",
+        "Power BI/Semantic Model/DAX.md",
+        "Power BI/Semantic Model/Measures.md",
     ],
     "standards/semantic-model.md": [
-        "powerbi/File Types.md",
-        "powerbi/reports/Visuals.md",
-        "powerbi/semantic-model/M Query.md",
-        "powerbi/semantic-model/Composite Models.md",
-        "powerbi/semantic-model/Fact Tables.md",
-        "powerbi/semantic-model/Relationships.md",
-        "powerbi/semantic-model/Tables.md",
+        "Power BI/File Types.md",
+        "Power BI/Reports/Visuals.md",
+        "Power BI/Semantic Model/M Query.md",
+        "Power BI/Semantic Model/Composite Models.md",
+        "Power BI/Semantic Model/Fact Tables.md",
+        "Power BI/Semantic Model/Relationships.md",
+        "Power BI/Semantic Model/Tables.md",
     ],
 }
 
 HEADER = (
     "<!-- ASSEMBLED from structured articles by scripts/assemble.py.\n"
-    "     Edit the source article under sql/, powerbi/, or tech/ and re-run\n"
+    "     Edit the source article under SQL/, Power BI/, or Technology/ and re-run\n"
     "     `python3 scripts/assemble.py`. Do not hand-edit sections here. -->\n\n"
 )
 

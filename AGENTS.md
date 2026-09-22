@@ -9,7 +9,7 @@ Every machine running a shipped coop client resolves THIS repo through a pinned 
 - `standards.yml` MUST keep `schema_version: 1`, the exact `authority` / `authoritative_ref` / `content_mode` / `precedence` / `refresh` scalar values, and a flat `standards:` map with EXACTLY three domains — `sql`, `dax`, `semantic_model` — whose `path` values are byte-exact `standards/sql.md`, `standards/dax.md`, `standards/semantic-model.md`. Never add domains, nesting, or front matter to `standards.yml`.
 - The three files under `standards/` are ASSEMBLED products — the only files clients read. They are built from the structured source articles; do not hand-edit them.
 - Retrieval is heading-based: the client splits the pinned file for the identified domain on `#{1..4}` headings and keeps up to 6 sections whose heading text matches task topic words. Therefore: (a) every article's `#` title must name its topic plainly (e.g. "Gold Stored Procedures", "Choosing a Power BI File Type"); (b) articles with distinctive, non-generic titles go EARLIER in the assembly order, or broad topic words crowd them out; (c) rules a retriever must apply independently need self-contained headings — see "Editing articles".
-- The structured source articles (`sql/`, `powerbi/`, `tech/`) carry YAML front matter for the future Azure AI Search design. Front matter is stripped during assembly and is invisible to shipped clients.
+- The structured source articles (`SQL/`, `Power BI/`, `Technology/`) carry YAML front matter for the future Azure AI Search design. Front matter is stripped during assembly and is invisible to shipped clients.
 - To change what clients enforce: edit the source article, re-run the assembly (`python3 scripts/assemble.py`), verify (below), commit. Clients worldwide pick it up on their next `coop sync` — no release needed.
 - Verify before pushing: every Markdown path in `standards.yml` exists; `python3 scripts/assemble.py --check` reports the pinned files are current; a sample prompt per domain retrieves the expected section.
 
@@ -30,9 +30,9 @@ Every machine running a shipped coop client resolves THIS repo through a pinned 
 - Examples show the intended result; they do not add requirements beyond the article text. Keep only the syntax needed to demonstrate the rules. Indexes, migration notes, discussion lists, and policy placeholders do not require code samples.
 - Preserve the owner's meaning. Rewrite for clarity and consistency, but do not strengthen, weaken, or broaden a rule without explicit direction.
 - Use `MUST` and `MUST NOT` for requirements and `MAY` for explicit permission. Do not introduce unresolved `SHOULD`, `PREFER`, `generally`, `maybe`, or question-form policy.
-- Keep each article scoped to one layer, artifact, or technology. Put SQL presentation and structural conventions in `sql/SQL Formatting.md`, Gold artifact rules under `sql/gold/`, and technology-specific rules under `tech/`.
-- Name maintained Markdown articles under `sql/`, `powerbi/`, and `tech/` with concise, human-readable title case because the filename is displayed in the index. Use spaces, preserve established abbreviations such as `DAX` and `SQL`, and use `Overview.md` for a folder-level introduction. Do not apply this rule to `standards/`, `deprecation/`, `AGENTS.md`, or the root `README.md`.
-- Put Power BI semantic-model rules under `powerbi/semantic-model/` and report rules under `powerbi/reports/`. Keep DAX expression rules separate from measure-object rules.
+- Keep each article scoped to one layer, artifact, or technology. Put SQL presentation and structural conventions in `SQL/SQL Formatting.md`, Gold artifact rules under `SQL/Gold/`, and technology-specific rules under `Technology/`.
+- Name maintained folders and Markdown articles under `SQL/`, `Power BI/`, and `Technology/` with concise, human-readable title case because their names are displayed in the index. Use spaces, preserve established abbreviations such as `DAX`, `SQL`, and `BI`, and use `Overview.md` for a folder-level introduction. Do not apply this rule to `standards/`, `deprecation/`, `scripts/`, `AGENTS.md`, or the root `README.md`.
+- Put Power BI semantic-model rules under `Power BI/Semantic Model/` and report rules under `Power BI/Reports/`. Keep DAX expression rules separate from measure-object rules.
 - Keep Gold fact-table and dimension-table standards in separate articles. Do not create a generic Gold tables article or route; retrieval must select `fact_table` or `dimension_table` explicitly.
 - Keep developer standards separate from implementation patterns. Incremental loading, upsert recipes, and SCD implementation belong to the separate patterns knowledge base.
 - Bronze and Silver SQL are produced deterministically. Articles MAY document that deterministic contract and human-approved indexing rules, but MUST NOT instruct an LLM to generate or alter the layer's output. Derive generator behavior only from owner-provided source procedures or configuration.
@@ -41,7 +41,7 @@ Every machine running a shipped coop client resolves THIS repo through a pinned 
 - When the owner has not decided a policy, identify it briefly in a clearly non-normative section of the closest applicable article. Do not create a separate considerations article or choose a convention on the owner's behalf.
 - Ask focused questions about unresolved decisions when working interactively. Update the article after the owner answers.
 - Bias SQL terminology and examples toward Dynamics 365 Finance and Operations schemas, such as `CustTable`, `dataareaid`, and `customerid`. Preserve source-system spelling for source fields. Do not turn an example-specific D365 F&O name into a universal requirement unless the owner approves it as policy.
-- Make every active SQL code sample conform to `sql/SQL Formatting.md`. When that article changes, update all active SQL examples; never alter examples under `deprecation/`.
+- Make every active SQL code sample conform to `SQL/SQL Formatting.md`. When that article changes, update all active SQL examples; never alter examples under `deprecation/`.
 
 ## Article metadata
 
@@ -53,7 +53,7 @@ Every machine running a shipped coop client resolves THIS repo through a pinned 
 
 ## Structure and routing
 
-- STATUS: the layered/nested route model below describes the target design (schema v2 + Azure AI Search) and is NOT what shipped clients execute. Until v2 ships, the flat three-domain v1 contract and assembly flow in "Shipped-client contract" above is authoritative; organize new articles under `sql/`, `powerbi/`, `tech/` and assemble them into the pinned files.
+- STATUS: the layered/nested route model below describes the target design (schema v2 + Azure AI Search) and is NOT what shipped clients execute. Until v2 ships, the flat three-domain v1 contract and assembly flow in "Shipped-client contract" above is authoritative; organize new articles under `SQL/`, `Power BI/`, and `Technology/` and assemble them into the pinned files.
 - When adding, moving, or replacing an active article, update `standards.yml` so deterministic lookup selects the correct file.
 - Put every normative article dependency directly in the applicable `standards.yml` route. Do not rely on prose references between Markdown files for retrieval; use links only for human navigation or non-normative context.
 - A rule must live at the narrowest scope that fully covers it. Do not copy the same normative rule into several articles unless each copy is needed for an independently retrieved article.
