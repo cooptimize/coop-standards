@@ -36,7 +36,7 @@ These articles describe expected output, not step-by-step implementation pattern
 ### Semantic models
 
 - [M Query](<Power BI/Semantic Model/M Query.md>)
-- [Tables](<Power BI/Semantic Model/Tables.md>)
+- [Organizing Tables](<Power BI/Semantic Model/Organizing Tables.md>)
 - [Fact Tables](<Power BI/Semantic Model/Fact Tables.md>)
 - [Relationships](<Power BI/Semantic Model/Relationships.md>)
 - [Measures](<Power BI/Semantic Model/Measures.md>)

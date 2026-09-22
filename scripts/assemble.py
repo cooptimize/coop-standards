@@ -44,7 +44,7 @@ MAP = {
         "Power BI/Semantic Model/Composite Models.md",
         "Power BI/Semantic Model/Fact Tables.md",
         "Power BI/Semantic Model/Relationships.md",
-        "Power BI/Semantic Model/Tables.md",
+        "Power BI/Semantic Model/Organizing Tables.md",
     ],
 }
 

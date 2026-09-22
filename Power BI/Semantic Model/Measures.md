@@ -9,12 +9,9 @@ status: active
 ---
 # Measures
 
-## Naming and placement
+## Naming
 
 - Name a base measure for the business value it returns, such as `[Sales Amount]` or `[Sales Quantity]`.
-- Every model MUST contain an `Ad Hoc Calculations` table for report-authored measures.
-- Put measures spanning more than one fact in `Multi-fact {Data Model Name} Measures`.
-- Hide the technical `Calculation` field in measure tables.
 - Name a filtered measure `{Base Measure} | {Filter}`, such as `[Sales Amount | Intercompany]`.
 - A filtered measure MUST reference its base measure instead of duplicating the aggregation.
 

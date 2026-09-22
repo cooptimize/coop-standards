@@ -1,13 +1,13 @@
 ---
 id: powerbi_semantic_model_tables
-title: Power BI Tables
+title: Organizing Power BI Tables
 domain: powerbi
 layer: semantic_model
 artifact: table
 technology: power_bi
 status: active
 ---
-# Tables
+# Organizing Tables
 
 ## Naming
 
