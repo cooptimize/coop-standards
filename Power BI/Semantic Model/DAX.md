@@ -25,7 +25,7 @@ RETURN result
 
 ## DAX average standards
 
-Never use `AVERAGE` or `AVERAGEX`. Explicitly define the business numerator and denominator, then use `DIVIDE`.
+Never use `AVERAGE` or `AVERAGEX`: they leave the business numerator and denominator implied, making the intended average ambiguous. Define both explicitly, then use `DIVIDE` so it is clear what is being totaled and what it is divided by.
 
 ```dax
 VAR numerator = SUM(FactSales[Revenue])
@@ -36,61 +36,78 @@ RETURN result
 
 ## CALCULATE filter standards
 
-Use `CALCULATE` to change a report selection or use a different relationship. The fragments below illustrate filtering; complete measures still follow the variable rules above.
+Choose the filter behavior from the reporting question. These fragments use illustrative model fields and existing base measures; complete measures still follow the variable rules above. Company and date selections remain unless the example explicitly changes them.
 
-### CALCULATE replacing a selection
+### CALCULATE fixed revenue KPI — replace a selection
 
-The report selects **Blue**. A direct **Red** predicate replaces Blue and returns Red sales.
-
-```dax
-CALCULATE([Sales Amount], Product[Color] = "Red")
-```
-
-### CALCULATE keeping both selections
-
-The report selects **Blue**. `KEEPFILTERS` also requires **Red**, so there are no matching products and a SUM-based measure returns blank.
+**Use when:** a dashboard's Revenue card should always show revenue, even when the Account Type slicer selects Expense. The measure defines its own account type.
 
 ```dax
-CALCULATE([Sales Amount], KEEPFILTERS(Product[Color] = "Red"))
+VAR accountType = "Revenue"
+VAR result = CALCULATE([Ledger Amount], Account[Account Type] = accountType)
+RETURN result
 ```
 
-### CALCULATE filtering visible values
+This replaces the selection on Account Type only. Filters on individual accounts or account groups still apply, so this is not a way to ignore every Account filter.
 
-The report selects **Blue**. `VALUES` contains only Blue, so filtering it for Red returns no matches.
+### KEEPFILTERS expense breakdown — respect the selection
+
+**Use when:** an account-type matrix has an Expense Amount column that should populate only expense rows. Revenue rows should be blank, rather than repeat the expense total.
 
 ```dax
-CALCULATE([Sales Amount], FILTER(VALUES(Product[Color]), Product[Color] = "Red"))
+VAR accountType = "Expense"
+VAR result = CALCULATE([Ledger Amount], KEEPFILTERS(Account[Account Type] = accountType))
+RETURN result
 ```
 
-Use `FILTER` to test visible groups, evaluate a measure, or compare fields. For example, retain only visible months with profit:
+The row and the measure must both match. Expense rows return expenses; Revenue rows return blank for a SUM-based base measure. The grand total includes expenses only. A direct predicate would replace each row's Account Type and repeat expenses on Revenue rows.
+
+### FILTER overspending departments — test a calculated result
+
+**Use when:** a budget review needs actual expenses only from departments that are over budget for the selected period. Assume `[Expense Variance]` is actual minus budget, with overspending positive.
 
 ```dax
-CALCULATE([Sales Amount], FILTER(VALUES('Date'[Month]), [Sales Profit] > 0))
+CALCULATE(
+    [Actual Expense],
+    FILTER(VALUES(Department[Department]), [Expense Variance] > 0)
+)
 ```
 
-Do not treat `FILTER` and `Field = value` as interchangeable. Empty results produce blank for a SUM-based measure; zero requires the base measure or another expression to produce zero.
+`VALUES` limits the test to visible departments. `FILTER` evaluates the variance separately for each department and keeps the overspenders. A fixed field comparison cannot express this measure-based test. The result is their actual expenses, not the overspend amount.
 
-### CALCULATE removing selections
+### ALL department share — remove one selection
 
-`ALL(Color)` removes the Color selection and keeps selections on other fields. With Blue selected, this returns all colors:
+**Use when:** a department matrix needs each department's percentage of total expense. The denominator must include all departments, even when the Department slicer selects only one.
 
 ```dax
-CALCULATE([Sales Amount], ALL(Product[Color]))
+VAR totalExpense = CALCULATE([Actual Expense], ALL(Department[Department]))
+VAR result = DIVIDE([Actual Expense], totalExpense)
+RETURN result
 ```
 
-`ALLEXCEPT` keeps Brand and removes other Product selections. Use it only when ignoring every other selection on that table is intentional.
+Only the Department field's filter is removed. Company, date, and filters on other fields such as Department Group still apply. If the denominator should include only slicer-selected departments, this is not that calculation.
+
+### ALLEXCEPT annual budget — retain only the year
+
+**Use when:** a monthly budget report needs the full-year budget as a comparison beside each month. Fiscal Year is explicitly selected or appears on the visual.
 
 ```dax
-CALCULATE([Sales Amount], ALLEXCEPT(Product, Product[Brand]))
+CALCULATE([Budget Amount], ALLEXCEPT('Date', 'Date'[Fiscal Year]))
 ```
 
-### CALCULATE relationship selection
+This keeps the Fiscal Year filter and removes month, quarter, date, and other Date-table filters. Use it only when ignoring all those other date selections is intentional. It does not infer a year from a selected month or date; without an explicit Fiscal Year filter, the result can include every year.
 
-Use `USERELATIONSHIP` to calculate through the specified relationship.
+### USERELATIONSHIP invoice due dates — change the date basis
+
+**Use when:** an invoice report normally groups amounts by invoice date, but finance also needs amounts by due date. The model has an inactive relationship from `FKDueDate` to Date.
 
 ```dax
-CALCULATE([Sales Amount], USERELATIONSHIP(FactSales[FKShipDate], 'Date'[PKDate]))
+CALCULATE([Invoice Amount], USERELATIONSHIP(Invoices[FKDueDate], 'Date'[PKDate]))
 ```
+
+The selected month now applies to due dates rather than invoice dates. This changes which date relationship the measure uses, not the date selected in the report.
+
+Empty matches return blank for a SUM-based measure. Zero requires the base measure or another expression to produce zero.
 
 ## DAX grouping standards
 
@@ -135,7 +152,6 @@ Before adding more complex DAX, check what one source row represents, the relati
 
 ## References (non-normative)
 
-
 - [Microsoft DAX `VAR` syntax and identifier rules](https://learn.microsoft.com/en-us/dax/var-dax)
 - [Microsoft: avoid using `FILTER` as a `CALCULATE` filter argument](https://learn.microsoft.com/en-us/dax/best-practices/dax-avoid-avoid-filter-as-filter-argument)
 - [Microsoft `KEEPFILTERS` behavior](https://learn.microsoft.com/en-us/dax/keepfilters-function-dax)
@@ -144,3 +160,5 @@ Before adding more complex DAX, check what one source row represents, the relati
 - [Microsoft `SUMMARIZECOLUMNS`](https://learn.microsoft.com/en-us/dax/summarizecolumns-function-dax)
 - [Microsoft `ALL`](https://learn.microsoft.com/en-us/dax/all-function-dax)
 - [Microsoft `ALLEXCEPT`](https://learn.microsoft.com/en-us/dax/allexcept-function-dax)
+- [Microsoft `CALCULATE`](https://learn.microsoft.com/en-us/dax/calculate-function-dax)
+- [Microsoft `USERELATIONSHIP`](https://learn.microsoft.com/en-us/dax/userelationship-function-dax)

@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "AGENTS.md",
+                "file": "Power BI/Semantic Model/DAX.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "AGENTS"
+              "title": "DAX"
             }
           }
         ]
@@ -94,7 +94,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "AGENTS.md",
+                "file": "Power BI/Semantic Model/DAX.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -104,7 +104,7 @@
                 "unlinkedCollapsed": true
               },
               "icon": "links-coming-in",
-              "title": "Backlinks for AGENTS"
+              "title": "Backlinks for DAX"
             }
           },
           {
@@ -113,12 +113,12 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "AGENTS.md",
+                "file": "Power BI/Semantic Model/DAX.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               },
               "icon": "links-going-out",
-              "title": "Outgoing links from AGENTS"
+              "title": "Outgoing links from DAX"
             }
           },
           {
@@ -156,13 +156,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "AGENTS.md",
+                "file": "Power BI/Semantic Model/DAX.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Outline of AGENTS"
+              "title": "Outline of DAX"
             }
           }
         ]
@@ -186,20 +186,22 @@
   },
   "active": "850cc729b180f7c1",
   "lastOpenFiles": [
-    "SQL/SQL Conventions.md",
-    "SQL/Gold/Dimension Tables.md",
-    "SQL/SQL Layout.md",
-    "AGENTS.md",
-    "SQL/SQL Formatting.md",
-    "README.md",
-    "SQL/Gold/Views.md",
-    "SQL/Silver/Overview.md",
     "Power BI/Semantic Model/Composite Models.md",
     "Power BI/Reports/Visuals.md",
     "Power BI/Reports/Page Formatting.md",
+    "Power BI/Reports/App Deployment.md",
+    "SQL/Silver/Overview.md",
+    "SQL/Gold/Views.md",
+    "SQL/Gold/Stored Procedures.md",
+    "SQL/Gold/Fact Tables.md",
+    "SQL/Gold/Dimension Tables.md",
+    "AGENTS.md",
+    "SQL/SQL Conventions.md",
+    "SQL/SQL Layout.md",
+    "SQL/SQL Formatting.md",
+    "README.md",
     "Power BI/Semantic Model/Fact Tables.md",
     "Power BI/Semantic Model/Organizing Tables.md",
-    "Power BI/Reports/App Deployment.md",
     "Power BI/File Types.md",
     "Power BI/Semantic Model/Tables.md",
     "Power BI/Semantic Model/Relationships.md",
@@ -219,8 +221,6 @@
     "Power BI/Semantic Model",
     "Power BI",
     "SQL/Silver",
-    "SQL/silver/Overview.md",
-    "SQL/Gold/Stored Procedures.md",
-    "SQL/Gold/Fact Tables.md"
+    "SQL/silver/Overview.md"
   ]
 }
