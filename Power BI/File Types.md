@@ -34,8 +34,21 @@ Report/definition/pages/…
 - Review preview limitations before conversion or deployment.
 - PBIR replaces the legacy `report.json` representation. Enabling it inside a PBIX does not make that binary file useful for Git and is not required for OneDrive/SharePoint.
 
+## PBIP Git exclusions
+
+Exclude local data caches and per-user settings from Git. Check these entries even when `.gitignore` already exists; Desktop only creates the file when one is absent.
+
+```gitignore
+**/.pbi/localSettings.json
+**/.pbi/cache.abf
+```
+
+Do not ignore the entire `.pbi` folder: it can also contain shared project settings. Adding ignore rules does not remove files already tracked by Git; untrack those files while retaining local copies.
+
 ## References (non-normative)
 
 
 - [Power BI Desktop project report folder](https://learn.microsoft.com/power-bi/developer/projects/projects-report)
 - [Power BI Desktop OneDrive and SharePoint integration](https://learn.microsoft.com/power-bi/create-reports/desktop-sharepoint-save-share)
+- [Microsoft: PBIP files and default Git exclusions](https://learn.microsoft.com/en-us/power-bi/developer/projects/projects-overview)
+- [Microsoft: semantic-model project files](https://learn.microsoft.com/en-us/power-bi/developer/projects/projects-dataset)

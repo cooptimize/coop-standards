@@ -17,9 +17,13 @@ Standards are required. Default positions are starting choices for new code; fol
 
 - Use explicit projections. Never use `SELECT *`.
 - In `INSERT ... SELECT`, alias every expression to its exact target column.
+- List the target columns explicitly in every `INSERT ... SELECT`; do not rely on the table's physical column order.
 
 ```sql
-     ,ct.accountnum AS Customer
+INSERT INTO dim.Customer (Customer)
+SELECT
+      ct.accountnum AS Customer
+FROM d365fo.custtable AS ct;
 ```
 
 ### Alias standards
@@ -28,6 +32,8 @@ Standards are required. Default positions are starting choices for new code; fol
 - Do not use single-letter or ordinal aliases such as `t1`.
 - Use square brackets only when required, such as names containing spaces or reserved words: `AS [Customer Name]`, but `AS Customer`. This applies to source identifiers and aliases, including views.
 - When an existing output contract requires a SQL reserved word as an alias, enclose it in brackets.
+- Qualify permanent table and view names with their schema. CTEs and temporary tables do not need schema qualification.
+- Output aliases follow the target article: technical fields retain their required names; Gold view attributes use friendly names with spaces.
 
 ```sql
 FROM d365fo.custtable AS ct
@@ -74,7 +80,7 @@ WHERE EXISTS (...)
 ### Alias defaults
 
 - Use recognizable source abbreviations, such as `salesline AS sl` and `salestable AS st`.
-- When a source is joined more than once or an abbreviation is ambiguous, append its role, such as `custtable AS ct_order` and `custtable AS ct_invoice`.
+- Use lowercase source aliases. When a source is joined more than once or an abbreviation is ambiguous, use `{abbreviation}_{role}`, such as `ct_order` and `ct_invoice`.
 - Use `AS` for table, CTE, and column aliases.
 - Avoid SQL reserved words as aliases.
 
@@ -85,7 +91,7 @@ custtable AS ct_invoice
 
 ### CTE defaults
 
-- Name CTEs for their transformation, such as `ActiveCustomers`.
+- Name CTEs in PascalCase for their transformation, such as `ActiveCustomers`.
 - Filter business rows in CTEs before joins.
 
 ```sql
@@ -120,3 +126,21 @@ INNER JOIN d365fo.salestable AS st
 LEFT JOIN dim.Customer AS cust
     ON ...
 ```
+
+### Missing-match defaults
+
+Use `NOT EXISTS` for missing-match checks when the comparison can contain NULL. `NOT IN (subquery)` can return no matches when the subquery includes NULL; it is not interchangeable with `NOT EXISTS`. Decide separately how a NULL outer key should behave.
+
+```sql
+-- Finds customers with no matching sales orders.
+WHERE NOT EXISTS (...)
+```
+
+## Open decisions (non-normative)
+
+- Defaults for `UNION` versus `UNION ALL`, use of `DISTINCT`, `COALESCE` versus `ISNULL`, and table hints such as `NOLOCK` are not defined.
+- Stored procedures allow CTEs and temporary tables; criteria for choosing between them are not defined.
+
+## References (non-normative)
+
+- [Microsoft: NULL behavior with IN and NOT IN](https://learn.microsoft.com/en-us/sql/t-sql/language-elements/in-transact-sql)

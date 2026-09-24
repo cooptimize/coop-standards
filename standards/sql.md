@@ -12,9 +12,13 @@ Standards are required. Default positions are starting choices for new code; fol
 
 - Use explicit projections. Never use `SELECT *`.
 - In `INSERT ... SELECT`, alias every expression to its exact target column.
+- List the target columns explicitly in every `INSERT ... SELECT`; do not rely on the table's physical column order.
 
 ```sql
-     ,ct.accountnum AS Customer
+INSERT INTO dim.Customer (Customer)
+SELECT
+      ct.accountnum AS Customer
+FROM d365fo.custtable AS ct;
 ```
 
 ### Alias standards
@@ -23,6 +27,8 @@ Standards are required. Default positions are starting choices for new code; fol
 - Do not use single-letter or ordinal aliases such as `t1`.
 - Use square brackets only when required, such as names containing spaces or reserved words: `AS [Customer Name]`, but `AS Customer`. This applies to source identifiers and aliases, including views.
 - When an existing output contract requires a SQL reserved word as an alias, enclose it in brackets.
+- Qualify permanent table and view names with their schema. CTEs and temporary tables do not need schema qualification.
+- Output aliases follow the target article: technical fields retain their required names; Gold view attributes use friendly names with spaces.
 
 ```sql
 FROM d365fo.custtable AS ct
@@ -69,7 +75,7 @@ WHERE EXISTS (...)
 ### Alias defaults
 
 - Use recognizable source abbreviations, such as `salesline AS sl` and `salestable AS st`.
-- When a source is joined more than once or an abbreviation is ambiguous, append its role, such as `custtable AS ct_order` and `custtable AS ct_invoice`.
+- Use lowercase source aliases. When a source is joined more than once or an abbreviation is ambiguous, use `{abbreviation}_{role}`, such as `ct_order` and `ct_invoice`.
 - Use `AS` for table, CTE, and column aliases.
 - Avoid SQL reserved words as aliases.
 
@@ -80,7 +86,7 @@ custtable AS ct_invoice
 
 ### CTE defaults
 
-- Name CTEs for their transformation, such as `ActiveCustomers`.
+- Name CTEs in PascalCase for their transformation, such as `ActiveCustomers`.
 - Filter business rows in CTEs before joins.
 
 ```sql
@@ -116,11 +122,31 @@ LEFT JOIN dim.Customer AS cust
     ON ...
 ```
 
+### Missing-match defaults
+
+Use `NOT EXISTS` for missing-match checks when the comparison can contain NULL. `NOT IN (subquery)` can return no matches when the subquery includes NULL; it is not interchangeable with `NOT EXISTS`. Decide separately how a NULL outer key should behave.
+
+```sql
+-- Finds customers with no matching sales orders.
+WHERE NOT EXISTS (...)
+```
+
+## Open decisions (non-normative)
+
+- Defaults for `UNION` versus `UNION ALL`, use of `DISTINCT`, `COALESCE` versus `ISNULL`, and table hints such as `NOLOCK` are not defined.
+- Stored procedures allow CTEs and temporary tables; criteria for choosing between them are not defined.
+
+## References (non-normative)
+
+- [Microsoft: NULL behavior with IN and NOT IN](https://learn.microsoft.com/en-us/sql/t-sql/language-elements/in-transact-sql)
+
 # SQL Layout
 
 These rules define how SQL is displayed. Apply them to new or fully reformatted statements. During a targeted edit, leave unrelated formatting alone.
 
-## SELECT layout standards
+## Standards
+
+### SELECT layout standards
 
 - In multiline lists, place each comma one character left of the first expression with no following space.
 - Within each contiguous projection section, align column-alias `AS` keywords at the same visual column. A blank line or organizing comment starts a new section.
@@ -132,7 +158,7 @@ SELECT
      ,ct.name       AS [Customer Name]
 ```
 
-## CTE layout standards
+### CTE layout standards
 
 - Put `WITH` on its own line.
 - Align CTE names. Place each continuation comma one character left of the CTE name with no following space.
@@ -143,7 +169,7 @@ WITH
     ,SalesOrders AS (...)
 ```
 
-## Join layout standards
+### Join layout standards
 
 Indent `ON` four spaces beneath the join and each additional predicate four spaces beneath `ON`.
 
@@ -153,26 +179,112 @@ INNER JOIN d365fo.salestable AS st
         AND ct.accountnum = st.custaccount
 ```
 
-## SQL Prompt bracket setting
+### SQL Prompt bracket setting
 
 Use **Remove unnecessary square brackets** when formatting with SQL Prompt. Keep required brackets, such as `AS [Customer Name]`; remove optional ones, such as `AS [Customer]`.
+
+## Default positions
+
+### Indentation defaults
+
+Use spaces so alignment survives different editor tab settings. At the outermost level, examples use six spaces before SELECT expressions and five before CTE names; each list's comma sits one column earlier. The lists align internally, not with each other.
+
+### Clause layout defaults
+
+Start `SELECT`, `FROM`, `WHERE`, `GROUP BY`, and `ORDER BY` on separate lines aligned with each other. Use the SELECT list layout for multiline grouping and ordering lists. Put additional WHERE conditions on separate indented lines; preserve parentheses that control mixed AND/OR logic.
+
+```sql
+FROM d365fo.custtable AS ct
+WHERE ct.blocked = 0
+    AND ct.dataareaid = 'usmf'
+```
+
+### CASE layout defaults
+
+Put each `WHEN` and `ELSE` on a separate indented line. Align `END` with `CASE` and keep the output alias after `END`.
+
+```sql
+CASE
+    WHEN ct.blocked = 0 THEN 'Available'
+    ELSE 'Blocked'
+END AS [Customer Status]
+```
+
+### EXISTS comment defaults
+
+Put the explanation immediately above the `WHERE` or `AND` containing `EXISTS` or `NOT EXISTS`. Plain prose is enough; no fixed comment template is required.
 
 ## References (non-normative)
 
 - [Redgate SQL Prompt: Add/remove square brackets](https://documentation.red-gate.com/sp10/sql-refactoring/sql-prompt-actions)
 
-# Silver Deterministic Generation
+# Silver Layer
 
-## Silver generation standards
+Silver preserves source-system structure and data types as closely as
+the target platform allows. Dynamics 365 and Dataverse sources use
+Schema Manager for deterministic Silver generation.
 
-- Produce Silver objects through the approved deterministic process.
-- Do not use an LLM to author or alter generated Silver SQL.
-- Change generated structure or behavior in the source procedure or configuration.
-- Human-authored indexing standards are allowed; implement approved rules in the deterministic process.
+## Standards
 
-## Source documentation pending (non-normative)
+### Silver schema standards
 
-Source procedures and configuration have not been provided. Their transformation, naming, type, and indexing behavior remains undocumented; do not infer it from generated output.
+-   Keep Silver tables structurally aligned with their source tables.
+-   Match source column data types as closely as the target platform
+    supports.
+-   Preserve source string lengths, numeric precision and scale, and
+    date/time precision where supported.
+-   When the target platform does not support the source type, use the
+    closest compatible target type.
+-   Do not change a Silver data type solely for downstream reporting,
+    presentation, or semantic-model convenience.
+-   Apply target-technology type restrictions where required by the
+    platform.
+
+### Dynamics 365 and Dataverse standards
+
+These standards apply to data sourced from:
+
+-   Dynamics 365 Finance & Operations (F&O).
+-   Dynamics 365 Project Operations.
+-   Dynamics 365 Customer Engagement (CE).
+-   Custom Dataverse applications and tables.
+
+They apply when these sources are replicated into Azure Data Lake or
+Microsoft OneLake for Azure- and Fabric-based implementations,
+respectively.
+
+-   Manage these Silver tables through the approved Schema Manager
+    process.
+-   Treat the generated table definition and lifecycle as owned by
+    Schema Manager.
+-   Do not manually alter Schema Manager-managed structures except for
+    documented exceptions.
+-   Do not use an LLM to author or alter generated Silver SQL.
+-   Change generated behavior through Schema Manager procedures,
+    configuration, metadata, or other supported mechanisms.
+
+See [Schema Manager](Schema%20Manager.md) for generation and lifecycle
+standards.
+
+### Other source systems
+
+Schema Manager requirements do not apply to source systems that have not
+been incorporated into Schema Manager.
+
+-   Match Silver columns to the source table data types as closely as
+    the target platform supports.
+-   Keep the Silver table as close to the source representation as
+    practical.
+-   Use the closest compatible target type when the source type is not
+    supported.
+-   Perform business-oriented transformations and dimensional modeling
+    downstream unless the Silver ingestion process requires otherwise.
+
+## Documented exceptions
+
+-   See [Schema Derivation](Schema%20Derivation.md) for source metadata
+    and `VARCHAR` length exceptions.
+-   See [Indexing](Indexing.md) for developer-managed Silver indexes.
 
 # Gold Stored Procedures
 

@@ -11,7 +11,7 @@ status: active
 
 ## Fact table structure standards
 
-- A fact with report-facing attributes uses a source-backed `{Fact Table} Attributes` table and a paired one-row `{Fact Table}` measure table.
+- A fact with report-facing attributes uses a source-backed Attributes table and a paired one-row measure table named for the fact.
 - Keep fields in Attributes and measures in the measure table.
 - A fact without report-facing attributes can remain one source-backed table and be split later.
 
@@ -36,3 +36,8 @@ Use these folders when the fields exist:
 | Attributes | Report-facing fields |
 | Keys | All fields hidden |
 | Numbers | All fields hidden |
+
+## Open decisions (non-normative)
+
+- A universal singular/plural naming rule is not defined; `Ledger Transaction Attributes` and `Ledger Transactions` are the approved example.
+- Whether one-row measure tables must remain disconnected is not explicitly defined. Do not infer a relationship requirement from the phrase "one-row table."

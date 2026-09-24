@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Power BI/Semantic Model/DAX.md",
+                "file": "SQL/SQL Conventions.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "DAX"
+              "title": "SQL Conventions"
             }
           }
         ]
@@ -94,7 +94,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Power BI/Semantic Model/DAX.md",
+                "file": "SQL/SQL Conventions.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -104,7 +104,7 @@
                 "unlinkedCollapsed": true
               },
               "icon": "links-coming-in",
-              "title": "Backlinks for DAX"
+              "title": "Backlinks for SQL Conventions"
             }
           },
           {
@@ -113,12 +113,12 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Power BI/Semantic Model/DAX.md",
+                "file": "SQL/SQL Conventions.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               },
               "icon": "links-going-out",
-              "title": "Outgoing links from DAX"
+              "title": "Outgoing links from SQL Conventions"
             }
           },
           {
@@ -156,13 +156,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Power BI/Semantic Model/DAX.md",
+                "file": "SQL/SQL Conventions.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Outline of DAX"
+              "title": "Outline of SQL Conventions"
             }
           }
         ]
@@ -186,16 +186,16 @@
   },
   "active": "850cc729b180f7c1",
   "lastOpenFiles": [
+    "SQL/Gold/Dimension Tables.md",
+    "Power BI/Semantic Model/DAX.md",
     "SQL/Silver/Schema Manager.md",
     "SQL/Silver/Schema Derivation.md",
     "SQL/Silver/Indexing.md",
     "SQL/SQL Layout.md",
     "SQL/SQL Conventions.md",
     "SQL/Gold/Stored Procedures.md",
-    "SQL/Gold/Dimension Tables.md",
     "SQL/Gold/Fact Tables.md",
     "SQL/Gold/Views.md",
-    "Power BI/Semantic Model/DAX.md",
     "Power BI/Semantic Model/Composite Models.md",
     "Power BI/Reports/Visuals.md",
     "Power BI/Reports/Page Formatting.md",

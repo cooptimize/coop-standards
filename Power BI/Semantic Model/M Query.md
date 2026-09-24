@@ -12,8 +12,8 @@ status: active
 ## Connection parameter standards
 
 - Use `SQLServer` and `SQLDB` connection parameters.
-- Do not use `PartialData` in new models.
-- Define schema and table names as local query parameters.
+- Do not use `PartialData`, the legacy development data-limiting parameter, in new models.
+- Define schema and table names as local `let` steps, distinct from the shared `SQLServer` and `SQLDB` parameters.
 
 ```powerquery
 let
@@ -27,13 +27,15 @@ in
 
 ## Development refresh standards
 
-Use **Sync schema only** during development. Load imported data after deploying the semantic model.
+In Power BI Desktop, expand **Home > Refresh** and choose **Sync schema only** during development. Load imported data after deploying the semantic model.
 
 ## Fact query standards
 
-`{Fact Table} Attributes` reads the source rows. Its paired `{Fact Table}` query is a one-row measure table containing one `Int64` column, `Calculation`, with value `0`.
+For a split fact, the Attributes query reads source rows. Its paired measure query contains one `Int64` column, `Calculation`, and one row with value `0`.
 
 Example: `Ledger Transaction Attributes` holds the data; `Ledger Transactions` holds measures.
+
+Table placement and visibility are defined in [Fact Tables](<Fact Tables.md>).
 
 ## Measure table query standards
 
@@ -48,5 +50,15 @@ Use a literal `#table` for every one-row measure table so Tabular Editor can rea
 1. Parameters
 2. Dimensions
 3. Facts — Fact Measure Hosts, then Fact Attributes
-4. Calculation Tables
-5. Other Queries
+4. Calculation Tables — the `Ad Hoc Calculations` and `Multi-Fact Calculations` measure tables, not calculation groups or DAX calculated tables
+5. Other Queries — supporting queries and functions outside the groups above
+
+## Open decisions (non-normative)
+
+- A migration process for existing `PartialData` models is not defined.
+- Allowed M transformations, native queries, and query-folding requirements are not defined. Do not infer a ban on all M transformations from the simple source-navigation example.
+- Power BI incremental-refresh parameters and setup are not defined here; loading recipes belong in the separate patterns knowledge base.
+
+## References (non-normative)
+
+- [Microsoft: Power BI refresh options](https://learn.microsoft.com/en-us/power-bi/connect-data/refresh-data)
