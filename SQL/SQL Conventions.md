@@ -19,15 +19,14 @@ Standards are required. Default positions are starting choices for new code; fol
 - In `INSERT ... SELECT`, alias every expression to its exact target column.
 
 ```sql
-     ,ct.accountnum AS [Customer]
+     ,ct.accountnum AS Customer
 ```
 
 ### Alias standards
 
 - Alias every table and CTE reference, even when only one source is referenced.
 - Do not use single-letter or ordinal aliases such as `t1`.
-- Enclose every column alias in brackets, such as `AS [Customer Name]`.
-- Do not bracket source identifiers unless required.
+- Use square brackets only when required, such as names containing spaces or reserved words: `AS [Customer Name]`, but `AS Customer`. This applies to source identifiers and aliases, including views.
 - When an existing output contract requires a SQL reserved word as an alias, enclose it in brackets.
 
 ```sql
@@ -98,10 +97,26 @@ ActiveCustomers AS (...)
 - Use explicit `INNER JOIN` or `LEFT JOIN` for new and fully rewritten statements.
 - Use `LEFT JOIN`, not `LEFT OUTER JOIN`; omit the optional `OUTER` keyword.
 - Do not use `FULL OUTER JOIN` by default.
-- Order multi-column predicates from the broadest key to the most specific. For D365 F&O, place `dataareaid` first.
+- Within each `ON` clause, order join conditions from the most general key to the most specific: for example, company (`dataareaid`) before sales order (`salesid`).
 - Place the table already in the `FROM`/join chain first and the table introduced by that `JOIN` second.
 
 ```sql
 INNER JOIN d365fo.salestable AS st
     ON sl.dataareaid = st.dataareaid
+        AND sl.salesid = st.salesid
+```
+
+### Join order defaults
+
+- Start `FROM` with the most detailed source table, such as sales lines rather than sales headers.
+- List `INNER JOIN` clauses first, followed by `LEFT JOIN` clauses.
+- Favor larger tables earlier and smaller lookup tables later.
+- Respect dependencies: a join that uses an earlier table's fields must follow that table. These are ordering guidelines; do not reorder joins when doing so changes which rows are returned.
+
+```sql
+FROM d365fo.salesline AS sl
+INNER JOIN d365fo.salestable AS st
+    ON ...
+LEFT JOIN dim.Customer AS cust
+    ON ...
 ```

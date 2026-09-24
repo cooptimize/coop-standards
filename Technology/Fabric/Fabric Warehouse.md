@@ -34,7 +34,7 @@ Do not apply these persisted-column restrictions to Azure SQL. Select Azure SQL 
 In CTAS projections, explicitly cast expressions when the persisted type needs to be controlled, including aggregate outputs.
 
 ```sql
-     ,CAST(SUM(sl.lineamount) AS decimal(19,4)) AS [SalesAmount]
+     ,CAST(SUM(sl.lineamount) AS decimal(19,4)) AS SalesAmount
 ```
 
 ## Fabric connection standards

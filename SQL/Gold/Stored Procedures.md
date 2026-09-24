@@ -47,8 +47,8 @@ Write the completed rows without adding business logic. The loading pattern and 
 ```sql
 INSERT INTO fact.Sales (FKCustomer,SalesAmount)
 SELECT
-      fs.PKCustomer AS [FKCustomer]
-     ,fs.lineamount AS [SalesAmount]
+      fs.PKCustomer AS FKCustomer
+     ,fs.lineamount AS SalesAmount
 FROM #FinalSales AS fs;
 ```
 

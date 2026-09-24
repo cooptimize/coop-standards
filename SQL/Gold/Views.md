@@ -19,9 +19,9 @@ CREATE VIEW sales.Customer AS
 
 ## View field standards
 
-- Bracket every output alias, including unchanged names.
+- Give every projected field an explicit alias, including unchanged names. Use brackets only when the name requires them.
 - Organize dimensions under `--Keys` and `--Attributes`; add `--Numbers` for facts.
-- Include `NULL AS [FKNULL]` in every fact view's keys.
+- Include `NULL AS FKNULL` in every fact view's keys.
 - Keep key and number names unchanged. Numbers are additive fact fields intended for `SUM`.
 - Give attributes friendly names with spaces.
 - Exclude helper join fields such as `dataareaid` and `customerid`.
@@ -31,7 +31,7 @@ CREATE VIEW sales.Customer AS
 ```sql
 SELECT
     --Keys
-      cust.PKCustomer   AS [PKCustomer]
+      cust.PKCustomer   AS PKCustomer
     --Attributes
      ,cust.CustomerName AS [Customer Name]
 FROM dim.Customer AS cust;
@@ -42,12 +42,12 @@ FROM dim.Customer AS cust;
 ```sql
 SELECT
     --Keys
-      NULL             AS [FKNULL]
-     ,sales.FKCustomer AS [FKCustomer]
+      NULL             AS FKNULL
+     ,sales.FKCustomer AS FKCustomer
     --Attributes
      ,sales.SalesOrder AS [Sales Order]
     --Numbers
-     ,sales.SalesAmount AS [SalesAmount]
+     ,sales.SalesAmount AS SalesAmount
 FROM fact.Sales AS sales;
 ```
 

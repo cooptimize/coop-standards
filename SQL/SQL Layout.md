@@ -19,7 +19,7 @@ These rules define how SQL is displayed. Apply them to new or fully reformatted 
 
 ```sql
 SELECT
-      ct.accountnum AS [Customer]
+      ct.accountnum AS Customer
      ,ct.name       AS [Customer Name]
 ```
 
@@ -43,3 +43,11 @@ INNER JOIN d365fo.salestable AS st
     ON ct.dataareaid = st.dataareaid
         AND ct.accountnum = st.custaccount
 ```
+
+## SQL Prompt bracket setting
+
+Use **Remove unnecessary square brackets** when formatting with SQL Prompt. Keep required brackets, such as `AS [Customer Name]`; remove optional ones, such as `AS [Customer]`.
+
+## References (non-normative)
+
+- [Redgate SQL Prompt: Add/remove square brackets](https://documentation.red-gate.com/sp10/sql-refactoring/sql-prompt-actions)
