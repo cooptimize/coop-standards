@@ -7,42 +7,54 @@ artifact: table
 technology: power_bi
 status: active
 ---
-# Organizing Tables
+# Organizing Semantic Model Tables
 
-## Naming
+## Table naming standards
 
 - Use PascalCase table and calculated-column names.
-- Column references MUST include the table name: `Table[Column]`.
+- Qualify column references with the table name.
 
-## Fields
+```dax
+Customer[CustomerGroup]
+```
+
+## Field formatting standards
 
 - Disable summarization for numeric columns not intended for aggregation.
-- Format dates as `mm/dd/yyyy`.
-- Display Boolean/BIT fields as `TRUE` / `FALSE`.
-- Convert date/time values to the client's primary time zone in SQL, not with a fixed UTC offset.
-- Display date/time values with the local date, time, and time-zone context, such as `10/06/2025 3:00 PM Eastern`.
-- Include the time zone in the converted column name, such as `Created Date ET`.
+- Format dates as `mm/dd/yyyy` and Boolean/BIT fields as `TRUE` / `FALSE`.
+- Convert timestamps to the client's primary time zone in SQL using time-zone conversion, never a fixed UTC offset.
+- Show the local date, time, and zone; include the zone in the column name.
 
-## Date table
+```text
+Created Date ET: 10/06/2025 3:00 PM Eastern
+```
 
-- Time intelligence MUST use one contiguous marked Date table.
-- Disable Power BI auto date/time. Remove `LocalDateTable_*` and `DateTableTemplate_*` tables.
-- Use `Calendar`, `Fiscal`, and `Relative` display folders when those fields exist.
+## Date table standards
 
-## Dimension folders
+- Use one contiguous, marked Date table for time intelligence.
+- Disable auto date/time and remove `LocalDateTable_*` and `DateTableTemplate_*` tables.
+- Use `Calendar`, `Fiscal`, and `Relative` folders when those fields exist.
 
-Dimension display folders are optional. When used, organize fields into logical subject groups.
+## Dimension folder standards
 
-## Hierarchies and sorting
+Dimension folders are optional. When used, group fields by subject.
 
-- Put ordered levels in a hierarchy.
-- A hierarchy MAY use any clear name.
-- Place first the field whose label can represent the hierarchy when a visual cannot rename it.
-- Sort Date-table strings by an integer or Date column.
-- Hide columns used only for sorting.
+## Hierarchy and sorting standards
 
-## Deployment
+- Put ordered levels in a hierarchy with a clear name.
+- Put first the field whose label can represent the hierarchy in visuals where it cannot be renamed.
+- Sort Date-table strings by an integer or Date column. Hide sort-only columns.
 
-- Direct Lake models MUST NOT contain unsupported calculated columns.
-- Direct Lake source table names MUST match the source exactly.
+```text
+Month Name → sort by Month Number (hidden)
+```
+
+## Semantic model deployment standards
+
+- Do not use unsupported calculated columns in Direct Lake models.
+- Direct Lake table names match their source exactly.
 - Deploy semantic-model source with TMDL, not TMSL.
+
+## Open decisions (non-normative)
+
+Clarify the scope of PascalCase naming: approved measure-table names and report-facing column names contain spaces, and Direct Lake tables retain source names.

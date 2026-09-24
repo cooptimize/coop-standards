@@ -23,7 +23,8 @@ ROOT = pathlib.Path(__file__).resolve().parent.parent
 # titles go first, or broad topic words crowd them out of the 6-chunk budget.
 MAP = {
     "standards/sql.md": [
-        "SQL/SQL Formatting.md",
+        "SQL/SQL Conventions.md",
+        "SQL/SQL Layout.md",
         "SQL/Silver/Overview.md",
         "SQL/Gold/Stored Procedures.md",
         "SQL/Gold/Fact Tables.md",

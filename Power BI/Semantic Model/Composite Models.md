@@ -9,20 +9,26 @@ status: active
 ---
 # Composite Models
 
-- Every composite-model family MUST designate exactly one `Primary` model.
-- Shared dimensions MUST come from the Primary model.
-- Secondary models MUST contribute add-on facts after the Primary model.
-- Imported tables MUST retain their source names during composite-model assembly.
+## Standards
 
-`Finance + Project Accounting` uses Finance as Primary and Project Accounting as an add-on. SIOP uses Inventory as Primary and Project Management as an add-on.
+### Composite model structure standards
 
-## Large dimensions
+- Designate exactly one Primary model in each composite-model family.
+- Take shared dimensions from Primary; add facts from secondary models afterward.
+- Keep imported table names unchanged.
 
-Large or high-cardinality dimensions, such as Voucher, can cause model-size and memory errors in composite models.
+`Finance + Project Accounting`: Finance is Primary; Project Accounting adds facts. For SIOP, Inventory is Primary and Project Management adds facts.
 
-- These dimensions MUST NOT be included in a composite model by default.
-- A required large dimension MUST be validated for model size, memory use, and successful deployment before adoption.
+### Large dimension validation standards
+
+When a large or high-cardinality dimension such as Voucher is required, validate model size, memory use, and successful deployment before adopting it.
+
+## Default positions
+
+### Composite dimension defaults
+
+Exclude large or high-cardinality dimensions such as Voucher by default; they can cause model-size and memory errors.
 
 ## Open decisions (non-normative)
 
-- Whether Production participates in the SIOP composite model.
+Whether Production participates in SIOP.

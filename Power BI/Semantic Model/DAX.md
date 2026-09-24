@@ -9,163 +9,132 @@ status: active
 ---
 # DAX
 
-## Naming and structure
+## DAX structure standards
 
-- DAX MUST use consistent, readable formatting. DAX Formatter MAY be used.
-- Qualify columns as `Table[Column]`; do not qualify measure references.
-- A single aggregation or measure reference MAY remain one expression.
-- Every other measure MUST use named `VAR` steps and `RETURN`.
-- Variable names MUST use descriptive camel case, such as `salesByOrder` and `result`. They MUST NOT use a prefix.
-- Split intermediate results into variables; do not nest `CALCULATE` inside `CALCULATE`.
-- Declare business-meaningful numeric and string literals as named variables. Arithmetic `0`, `1`, and `100`, plus `BLANK()`, `TRUE()`, and `FALSE()`, MAY remain inline.
+- Use consistent, readable formatting; DAX Formatter is allowed.
+- Qualify columns as `Table[Column]`; leave measure references unqualified.
+- A single aggregation or measure reference can remain one expression. Other measures use named `VAR` steps and `RETURN`.
+- Use descriptive camel case variables without prefixes.
+- Put intermediate results in variables; do not nest `CALCULATE` inside `CALCULATE`.
+- Name business-meaningful numeric and string constants with variables. Arithmetic `0`, `1`, and `100`, plus `BLANK()`, `TRUE()`, and `FALSE()`, can stay inline.
 
-## Averages
+```dax
+VAR result = [Sales Amount] - [Sales Cost]
+RETURN result
+```
 
-- `AVERAGE()` and `AVERAGEX()` MUST NOT be used because their denominators are implicit.
-- Define the business numerator and denominator separately, then use `DIVIDE()`.
+## DAX average standards
+
+Never use `AVERAGE` or `AVERAGEX`. Explicitly define the business numerator and denominator, then use `DIVIDE`.
 
 ```dax
 VAR numerator = SUM(FactSales[Revenue])
 VAR denominator = SUM(FactSales[Quantity])
 VAR result = DIVIDE(numerator, denominator)
-RETURN
-    result
+RETURN result
 ```
 
-## CALCULATE
+## CALCULATE filter standards
 
-Use `CALCULATE` when the measure must change a report selection or use a different relationship.
+Use `CALCULATE` to change a report selection or use a different relationship. The fragments below illustrate filtering; complete measures still follow the variable rules above.
 
-The next three examples assume the report is filtered to Blue and the measure asks for Red.
+### CALCULATE replacing a selection
 
-### Replace a selection
-
-If the report selects Blue, this expression ignores that selection and returns Red revenue:
+The report selects **Blue**. A direct **Red** predicate replaces Blue and returns Red sales.
 
 ```dax
-CALCULATE(
-    [Sales Amount],
-    Product[Color] = "Red"
-)
+CALCULATE([Sales Amount], Product[Color] = "Red")
 ```
 
-### Require both selections
+### CALCULATE keeping both selections
 
-If the report selects Blue, this expression returns blank because a product cannot be both Blue and Red:
+The report selects **Blue**. `KEEPFILTERS` also requires **Red**, so there are no matching products and a SUM-based measure returns blank.
 
 ```dax
-CALCULATE(
-    [Sales Amount],
-    KEEPFILTERS(Product[Color] = "Red")
-)
+CALCULATE([Sales Amount], KEEPFILTERS(Product[Color] = "Red"))
 ```
 
-Use `KEEPFILTERS` when the calculation must honor the report selection and add another requirement to the same field.
+### CALCULATE filtering visible values
 
-### Filter visible groups
-
-`FILTER(VALUES(...))` searches only the values visible in the report. Because only Blue is visible, it cannot find Red and returns `BLANK()`:
+The report selects **Blue**. `VALUES` contains only Blue, so filtering it for Red returns no matches.
 
 ```dax
-CALCULATE(
-    [Sales Amount],
-    FILTER(
-        VALUES(Product[Color]),
-        Product[Color] = "Red"
-    )
-)
+CALCULATE([Sales Amount], FILTER(VALUES(Product[Color]), Product[Color] = "Red"))
 ```
 
-Use `FILTER` when the rule must test each visible group, evaluate a measure, or compare fields. This example keeps only visible months with profit:
+Use `FILTER` to test visible groups, evaluate a measure, or compare fields. For example, retain only visible months with profit:
 
 ```dax
-CALCULATE(
-    [Sales Amount],
-    FILTER(
-        VALUES('Date'[Month]),
-        [Sales Profit] > 0
-    )
-)
+CALCULATE([Sales Amount], FILTER(VALUES('Date'[Month]), [Sales Profit] > 0))
 ```
 
-`FILTER` and `Field = value` MUST NOT be treated as equivalent. Use `Field = value` to replace the report selection, `KEEPFILTERS(Field = value)` to require both values, and `FILTER(VALUES(Field), ...)` to search only visible values. A `SUM`-based measure returns `BLANK()` for the empty result; it returns zero only when the base measure or another expression produces zero.
+Do not treat `FILTER` and `Field = value` as interchangeable. Empty results produce blank for a SUM-based measure; zero requires the base measure or another expression to produce zero.
 
-### Remove selections
+### CALCULATE removing selections
 
-`ALL(Product[Color])` removes only the Color selection. If the report selects Blue, this returns sales for all colors while retaining selections on other fields:
+`ALL(Color)` removes the Color selection and keeps selections on other fields. With Blue selected, this returns all colors:
 
 ```dax
-CALCULATE(
-    [Sales Amount],
-    ALL(Product[Color])
-)
+CALCULATE([Sales Amount], ALL(Product[Color]))
 ```
 
-`ALLEXCEPT(Product, Product[Brand])` removes every selection on Product except Brand. If the report selects Brand and Color, this retains Brand and returns sales for all colors and other product fields:
+`ALLEXCEPT` keeps Brand and removes other Product selections. Use it only when ignoring every other selection on that table is intentional.
 
 ```dax
-CALCULATE(
-    [Sales Amount],
-    ALLEXCEPT(Product, Product[Brand])
-)
+CALCULATE([Sales Amount], ALLEXCEPT(Product, Product[Brand]))
 ```
 
-Use `ALLEXCEPT` only when every other selection on that table is intentionally ignored.
+### CALCULATE relationship selection
 
-### Use a different relationship
+Use `USERELATIONSHIP` to calculate through the specified relationship.
 
 ```dax
-CALCULATE(
-    [Sales Amount],
-    USERELATIONSHIP(FactSales[FKShipDate], 'Date'[PKDate])
-)
+CALCULATE([Sales Amount], USERELATIONSHIP(FactSales[FKShipDate], 'Date'[PKDate]))
 ```
 
-## SUMMARIZE and SUMMARIZECOLUMNS
+## DAX grouping standards
 
-- Use `SUMMARIZE` when a measure needs a grouped table built from a specific table or previously filtered table variable.
-- Use `SUMMARIZECOLUMNS` for a standalone DAX query that returns grouped model fields and measures.
-- Use `VALUES(Column)` when only one distinct field is required.
-- Group only at the business grain required by the calculation.
+- Use `SUMMARIZE` for a grouped table built from a specific table or filtered table variable.
+- Use `SUMMARIZECOLUMNS` for standalone queries returning grouped model fields and measures.
+- Use `VALUES(Column)` for one distinct field.
+- Group only at the level required by the business calculation.
 
 ```dax
-VAR salesByOrder =
-    SUMMARIZE(
-        FactSales,
-        FactSales[SalesOrder],
-        "salesAmount", [Sales Amount]
-    )
-VAR result =
-    SUMX(salesByOrder, [salesAmount])
-RETURN
-    result
+VAR salesByOrder = SUMMARIZE(FactSales, FactSales[SalesOrder], "salesAmount", [Sales Amount])
 ```
 
 ```dax
 EVALUATE
-SUMMARIZECOLUMNS(
-    'Date'[FiscalYear],
-    Customer[CustomerGroup],
-    "salesAmount", [Sales Amount]
-)
+SUMMARIZECOLUMNS('Date'[FiscalYear], Customer[CustomerGroup], "salesAmount", [Sales Amount])
 ```
 
-## Totals
+## DAX total standards
 
-- Validate detail rows, subtotals, and grand totals separately. Power BI recalculates a total for the whole total row; it does not automatically add the visible rows above it.
-- When the business definition requires summing row-level results, define the required grain explicitly and use an iterator over that grain.
+Test detail rows, subtotals, and grand totals separately. Power BI recalculates the total; it does not automatically add displayed rows.
 
-## Functions
+When the business definition requires adding row results, define the grouping explicitly and iterate over it.
 
-- Use `DIVIDE()` instead of `/`.
-- Do not use `EARLIER` or `EARLIEST`; capture the outer-row value in a variable.
-- Do not wrap arithmetic in `IFERROR`; use `DIVIDE()` or explicit tests for expected blank conditions.
+```dax
+VAR result = SUMX(salesByOrder, [salesAmount])
+RETURN result
+```
 
-## Model-first review
+## DAX function standards
 
-Complex DAX MUST trigger a review of the underlying table grain, relationships, and source transformations before more logic is added. Stable joins and row-level business transformations belong in the model or source layer when the complexity is caused by model structure.
+- Use `DIVIDE` instead of `/`.
+- Replace `EARLIER` and `EARLIEST` with a variable holding the outer-row value.
+- Do not wrap arithmetic in `IFERROR`. Use `DIVIDE` or explicit tests for expected blanks.
+
+```dax
+DIVIDE([Sales Amount], [Sales Quantity])
+```
+
+## Complex DAX review standards
+
+Before adding more complex DAX, check what one source row represents, the relationships, and source transformations. When the model structure causes the complexity, move stable joins and row-level business transformations into the model or source layer.
 
 ## References (non-normative)
+
 
 - [Microsoft DAX `VAR` syntax and identifier rules](https://learn.microsoft.com/en-us/dax/var-dax)
 - [Microsoft: avoid using `FILTER` as a `CALCULATE` filter argument](https://learn.microsoft.com/en-us/dax/best-practices/dax-avoid-avoid-filter-as-filter-argument)

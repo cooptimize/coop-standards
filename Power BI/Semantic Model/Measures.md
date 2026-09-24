@@ -7,63 +7,60 @@ artifact: measure
 technology: power_bi
 status: active
 ---
-# Measures
+# Semantic Model Measures
 
-## Naming
+## Standards
 
-- Name a base measure for the business value it returns, such as `[Sales Amount]` or `[Sales Quantity]`.
-- Name a filtered measure `{Base Measure} | {Filter}`, such as `[Sales Amount | Intercompany]`.
-- A filtered measure MUST reference its base measure instead of duplicating the aggregation.
+### Measure naming standards
 
-```dax
-[Sales Amount | Intercompany] =
-VAR result =
-    CALCULATE(
-        [Sales Amount],
-        KEEPFILTERS(Customer[Intercompany] = TRUE())
-    )
-RETURN
-    result
-```
-
-## Base measures
-
-An additive base measure MUST use `SUM(Table[NumberField])`.
+- Name base measures for their business value, such as `Sales Amount` or `Sales Quantity`.
+- Name filtered measures `{Base Measure} | {Filter}` and reference the base measure instead of repeating its aggregation.
+- Use `SUM` for additive base measures. Keep model-specific filtered measures in DAX, built from the base measure.
 
 ```dax
 [Sales Amount] = SUM('Sales Transactions'[SalesAmount])
 ```
 
-## SQL or DAX
+```dax
+[Sales Amount | Intercompany] =
+VAR result = CALCULATE([Sales Amount], KEEPFILTERS(Customer[Intercompany] = TRUE()))
+RETURN result
+```
 
-Use this placement default:
-
-- Default organization-certified calculations to Gold SQL when they are used, or are expected to be used, by multiple semantic models.
-- Otherwise, implement the calculation in DAX. Model-specific filtered measures MUST remain DAX measures built from a base measure.
-
-## Visibility and descriptions
+### Measure visibility standards
 
 - Expose business aggregations as explicit measures.
-- Hide visible numeric columns not intended for direct aggregation or set them to `summarizeBy: none`.
-- Every visible measure MUST have a description. Hidden helper measures MAY omit one.
+- Hide numeric columns not intended for direct aggregation or set `summarizeBy: none`.
+- Give every visible measure a description; hidden helper measures can omit it.
 
-## Formats
+### Measure format standards
 
-- Every visible measure MUST declare an explicit `formatString`.
-- Whole numbers MUST default to `#,###`.
-- Percentages MUST use `##%` unless a project-specific format overrides it.
-- Currency MUST use `"$ #,0;-$ #,0;$ 0;--"` unless a project-specific format overrides it.
-- Numeric-measure formats MUST align commas and decimal points within the visual.
-- When parenthesized negative currency or percentage values require alignment, use a dynamic format with a non-breaking space and regular Segoe UI. Do not use an ordinary trailing space or bold/semibold variants.
+- Give every visible measure an explicit format string.
+- Align commas and decimal points within the visual.
+- For aligned parenthesized negatives, use a dynamic format with non-breaking spaces and regular Segoe UI. Ordinary trailing spaces and bold/semibold fonts do not provide the required alignment.
 
 ```dax
 "$ #,0" & UNICHAR(160) & ";$ (#,0);$ 0" & UNICHAR(160)
 ```
 
-## Authoring and validation
+### Measure validation standards
 
-Before authoring a measure, establish its business definition, evaluation grain, required filter behavior, and date-table requirements.
+- Establish the business definition, what is being counted or summed, report-filter behavior, and date-table requirements before writing the measure.
+- Build and test incrementally.
+- Check the base result, slicers, blank/zero/no-row cases, and a known control total when available.
 
-Build and test measure logic incrementally before expanding it.
+## Default positions
 
-Validate the base result, relevant slicers, blank/zero/no-row cases, and a known control total when available.
+### SQL or DAX defaults
+
+Put organization-certified calculations in Gold SQL when multiple semantic models use them or are expected to. Otherwise, use DAX.
+
+### Measure number-format defaults
+
+Use these formats unless a project-specific format overrides them:
+
+| Value | Format |
+|---|---|
+| Whole number | `#,###` |
+| Percentage | `##%` |
+| Currency | `$ #,0;-$ #,0;$ 0;--` |

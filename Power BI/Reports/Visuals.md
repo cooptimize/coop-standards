@@ -9,40 +9,41 @@ status: active
 ---
 # Report Visuals
 
-Unless marked `MUST` or `MUST NOT`, these rules are defaults rather than requirements.  
+## Standards
 
-## Layout
+### Visual accessibility standards
 
-- Leave 16 pixels between visuals. At 100% zoom with snap to grid enabled, this is two grid movements.
-- Use no alternating row color for small tables.
-- Use alternating row color for large tables.
-- Visual titles are centered and dark gray.
+- Never use color alone to convey meaning. Combine color and tint in charts, and color and shape in icons.
+- Never use table or matrix cell shading.
 
-## Typography
+### Visual interaction standards
 
-Use Segoe UI by default. It provides the required flexibility and consistent numeric spacing; most other Power BI fonts are more limited.
+- Set chart interactions to **Filter**, not **Highlight**.
+- Explicitly define drill-through filters.
+- Do not create bookmark-controlled filter panels: they require two bookmarks on every page.
 
-## Color
+### KPI standards
 
-- Use one primary color per visual.
-- Use gray or lighter variations of the primary color for the remaining series and elements.
-- Color MUST NOT be the only indicator of meaning. Combine colors and tints in charts, and combine color and shape in icons.
-- Tables and matrices MUST NOT use cell shading.
+Use approved custom SVG assets for KPI status indicators instead of platform-default status icons.
 
-## Chart selection
+## Default positions
 
-Select the chart type that best communicates the stated requirement.
+### Visual layout defaults
 
-## Interactions
+- Leave 16 pixels between visuals: two grid movements at 100% zoom with snap to grid enabled.
+- Center titles and use dark gray.
+- Choose charts for the reporting requirement.
+- Use Segoe UI for flexibility and consistent numeric spacing.
 
-- Chart interactions MUST use `Filter`, not `Highlight`.
-- Drill-through pages MUST explicitly define their drill-through filters.
+### Visual color defaults
 
-## Filters
+- Use one primary color per visual; use gray or lighter variations for other elements.
+- Small tables have no alternating row colors. Large tables use alternating row colors.
 
-- Use one to five visible slicers instead of relying on the built-in Filters pane. Slicers are easier to discover, offer more control over the user experience, and can be selectively synchronized across pages.
-- Reports MUST NOT use bookmark-controlled filter panels. They require two bookmarks on every page and create unnecessary maintenance.
+### Slicer defaults
 
-## KPIs
+Use one to five visible slicers instead of relying on the built-in Filters pane. Slicers are discoverable, flexible, and can be selectively synchronized across pages.
 
-KPI status indicators MUST use approved custom SVG assets instead of platform-default status icons.
+## Open decisions (non-normative)
+
+Clarify whether the cell-shading prohibition excludes alternating row backgrounds, which are the current default for large tables.

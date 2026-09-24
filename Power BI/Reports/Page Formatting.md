@@ -9,17 +9,24 @@ status: active
 ---
 # Report Page Formatting
 
-## Theme
+## Standards
 
-- Every report MUST use a theme file.
-- The default theme MUST begin with the customer's primary logo or website colors and derive the report palette from them.
+### Report theme standards
 
-## Page
+Use a theme file in every report.
 
-- Page size defaults to use the built-in `16:9` HD format (1920x1080)
-- Page background defaults to very light gray.
-- Canvas background defaults to a slightly darker gray than the page background.
+### Visual background standards
 
-## Visuals
+Use white visual backgrounds.
 
-Visual backgrounds MUST be white.
+## Default positions
+
+### Report palette defaults
+
+Start with the customer's primary logo or website colors and build the palette from them.
+
+### Report page defaults
+
+- Use a 16:9 HD page, 1920 × 1080.
+- Use a very light gray page background.
+- Use a slightly darker gray canvas background.

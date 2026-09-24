@@ -9,33 +9,47 @@ status: active
 ---
 # Relationships
 
-## Model shape
+## Standards
 
-- Use a star schema unless an approved project requirement overrides it.
-- Keep dimensions flat; do not introduce relationship chains through intermediate dimension tables as the default shape.
-- Relationships MUST define the fact table first and the dimension table second, with `N:1` cardinality.
+### Relationship key standards
 
-## Keys
+- Define the fact first and dimension second, with `N:1` cardinality.
+- Use `int64` relationship keys, hide them, and set summarization to none.
 
-- Relationship key columns MUST use exact numeric types `int64`.
-- Hide relationship keys.
-- Set numeric relationship keys to `summarizeBy: none`.
+```text
+Sales[FKCustomer] → Customer[PKCustomer] (N:1)
+```
 
-## Filter direction
+### Inactive relationship standards
 
-- Physical bidirectional relationships MUST NOT be the default.
-- Use targeted `CROSSFILTER` in the applicable measure when temporary bidirectional propagation is required, unless an approved project override requires a physical bidirectional relationship.
+Every inactive relationship needs an intentional `USERELATIONSHIP()` consumer. Remove inactive relationships with no consumer.
 
-## Inactive relationships
+```dax
+USERELATIONSHIP(FactSales[FKShipDate], 'Date'[PKDate])
+```
 
-Every inactive relationship MUST have at least one intentional `USERELATIONSHIP()` consumer. Remove inactive relationships without a consumer.
+### FKNULL relationship standards
 
-## FKNULL relationships
+Use `FKNULL` only when the fact and dimension cannot conceptually be joined. Never use it to replace a valid relationship with missing, incomplete, or unmatched keys.
 
-An `FKNULL` relationship represents a fact-to-dimension relationship that does not and cannot conceptually exist. It MUST NOT replace a valid relationship whose key is unavailable, incomplete, or unmatched.
+Relate the fact's `FKNULL` column to the dimension key. Without a relationship, a visual can repeat the fact result for each dimension member. An active `FKNULL` relationship summarizes it under the blank/null member.
 
-- Relate the fact table's `FKNULL` column to the dimension key.
-- Create the relationship as active by default.
-- Without a relationship, a dimension visual can repeat the fact result for every dimension member.
-- With an active `FKNULL` relationship, the fact result is summarized under the dimension's blank/null member.
-- Adding an `FKNULL` relationship after reports are deployed can change existing visual results. Treat it as a potentially breaking model change and regression-test affected reports before deployment.
+Adding this after deployment can change report results. Regression-test affected reports before deployment.
+
+```text
+Sales[FKNULL] → UnrelatedDimension[PKDimension] (N:1)
+```
+
+## Default positions
+
+### Model shape defaults
+
+Use a star schema with flat dimensions. Avoid chains through intermediate dimension tables unless an approved project requirement overrides this shape.
+
+### Filter direction defaults
+
+Avoid physical bidirectional relationships. Use `CROSSFILTER` in the measure when temporary bidirectional filtering is needed, unless an approved project override requires a physical relationship.
+
+### FKNULL activation defaults
+
+Make `FKNULL` relationships active.

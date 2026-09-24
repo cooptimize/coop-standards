@@ -1,53 +1,130 @@
 <!-- ASSEMBLED from structured articles by scripts/assemble.py.
-     Edit the source article under sql/, powerbi/, or tech/ and re-run
+     Edit the source article under SQL/, Power BI/, or Technology/ and re-run
      `python3 scripts/assemble.py`. Do not hand-edit sections here. -->
 
 # Choosing a Power BI File Type
 
-## Selection
+## File selection standards
 
-| Source control | Required format |
+| Workflow | Required format |
 |---|---|
 | OneDrive or SharePoint | PBIX |
 | Git | PBIP with PBIR |
 
-- OneDrive and SharePoint workflows MUST use PBIX. Microsoft supports only PBIX files in the Power BI Desktop OneDrive/SharePoint integration.
-- Git workflows MUST use PBIP with PBIR so report and semantic-model definitions are stored as reviewable text files.
-- PBIX MUST NOT be the canonical Git artifact. Git can store the binary, but it does not provide useful diffs or merges.
-- PBIP MUST NOT be used for a OneDrive or SharePoint workflow.
+Do not use PBIP for OneDrive/SharePoint workflows or PBIX as the canonical Git artifact. PBIX is binary and does not provide useful diffs or merges.
 
-## PBIP and PBIR
+## Project format standards
 
-- PBIP is the project container for the report and semantic model.
-- PBIR is the report definition format inside the project; it is not an alternative to PBIP.
-- PBIR stores pages, visuals, bookmarks, and report metadata as separate JSON files under the report's `definition/` folder.
-- The semantic model in a PBIP project MUST use TMDL.
+- PBIP contains the report and semantic model; use TMDL for the model.
+- PBIR defines the report inside that project. It stores pages, visuals, bookmarks, and report metadata as separate JSON files under `definition/`.
 
-## Enhanced report format preview
+```text
+Report/definition/pages/…
+```
 
-Microsoft's **Store reports using enhanced metadata format (PBIR)** preview option enables PBIR. It replaces the legacy `report.json` representation with the `definition/` folder.
+## Enhanced report format standards
 
-- New Git projects MUST enable PBIR.
-- Conversion of an existing PBIR-Legacy project MUST be explicitly approved for that project because Power BI Desktop cannot reverse the upgrade through its UI.
-- Preview limitations MUST be reviewed before conversion or deployment.
-- Enabling PBIR inside a PBIX does not make the PBIX source-control friendly and is not required for OneDrive or SharePoint workflows.
+- Enable PBIR for new Git projects through **Store reports using enhanced metadata format (PBIR)**.
+- Get explicit project approval before converting PBIR-Legacy: Desktop cannot reverse the upgrade through its UI.
+- Review preview limitations before conversion or deployment.
+- PBIR replaces the legacy `report.json` representation. Enabling it inside a PBIX does not make that binary file useful for Git and is not required for OneDrive/SharePoint.
 
 ## References (non-normative)
+
 
 - [Power BI Desktop project report folder](https://learn.microsoft.com/power-bi/developer/projects/projects-report)
 - [Power BI Desktop OneDrive and SharePoint integration](https://learn.microsoft.com/power-bi/create-reports/desktop-sharepoint-save-share)
 
+# Power BI App Deployment
+
+## Standards
+
+### App logo standards
+
+Create workspace and app logos in Canva: select an existing icon and apply the report theme colors.
+
+## Default positions
+
+### Workspace audience defaults
+
+Organize workspaces by department or user group. The workspace represents the audience.
+
+### App audience defaults
+
+Avoid dividing an app into Power BI audiences; the management overhead is rarely worth it.
+
+# Report Page Formatting
+
+## Standards
+
+### Report theme standards
+
+Use a theme file in every report.
+
+### Visual background standards
+
+Use white visual backgrounds.
+
+## Default positions
+
+### Report palette defaults
+
+Start with the customer's primary logo or website colors and build the palette from them.
+
+### Report page defaults
+
+- Use a 16:9 HD page, 1920 × 1080.
+- Use a very light gray page background.
+- Use a slightly darker gray canvas background.
+
 # Report Visuals
 
-KPI status indicators MUST use approved custom SVG assets instead of platform-default status icons.
+## Standards
+
+### Visual accessibility standards
+
+- Never use color alone to convey meaning. Combine color and tint in charts, and color and shape in icons.
+- Never use table or matrix cell shading.
+
+### Visual interaction standards
+
+- Set chart interactions to **Filter**, not **Highlight**.
+- Explicitly define drill-through filters.
+- Do not create bookmark-controlled filter panels: they require two bookmarks on every page.
+
+### KPI standards
+
+Use approved custom SVG assets for KPI status indicators instead of platform-default status icons.
+
+## Default positions
+
+### Visual layout defaults
+
+- Leave 16 pixels between visuals: two grid movements at 100% zoom with snap to grid enabled.
+- Center titles and use dark gray.
+- Choose charts for the reporting requirement.
+- Use Segoe UI for flexibility and consistent numeric spacing.
+
+### Visual color defaults
+
+- Use one primary color per visual; use gray or lighter variations for other elements.
+- Small tables have no alternating row colors. Large tables use alternating row colors.
+
+### Slicer defaults
+
+Use one to five visible slicers instead of relying on the built-in Filters pane. Slicers are discoverable, flexible, and can be selectively synchronized across pages.
+
+## Open decisions (non-normative)
+
+Clarify whether the cell-shading prohibition excludes alternating row backgrounds, which are the current default for large tables.
 
 # M Query
 
-## Parameters
+## Connection parameter standards
 
-- Data-source connections MUST use `SQLServer` and `SQLDB` parameters.
-- New models MUST NOT use `PartialData`.
-- Define table and schema names as local query parameters instead of repeating inline literals.
+- Use `SQLServer` and `SQLDB` connection parameters.
+- Do not use `PartialData` in new models.
+- Define schema and table names as local query parameters.
 
 ```powerquery
 let
@@ -59,145 +136,183 @@ in
     Result
 ```
 
-## Development refresh
+## Development refresh standards
 
-- During development, use **Sync schema only** instead of loading imported data into the local model.
-- Refresh imported data after the semantic model is deployed.
+Use **Sync schema only** during development. Load imported data after deploying the semantic model.
 
-## Fact queries
+## Fact query standards
 
-- `{Fact Table} Attributes` MUST be the source-backed fact query, such as `Ledger Transaction Attributes`.
-- Its paired `{Fact Table}` query MUST contain one `Int64` column named `Calculation`, one row with the value `0`, and serve as the measure host, such as `Ledger Transactions`.
-- For Tabular Editor compatibility, one-row measure hosts MUST use the literal `#table` pattern below. Do not use the compressed `Binary.Decompress`/JSON expression generated by **Enter Data**.
-- Every model MUST contain an `Ad Hoc Calculations` one-row measure host for report-authored DAX.
+`{Fact Table} Attributes` reads the source rows. Its paired `{Fact Table}` query is a one-row measure table containing one `Int64` column, `Calculation`, with value `0`.
+
+Example: `Ledger Transaction Attributes` holds the data; `Ledger Transactions` holds measures.
+
+## Measure table query standards
+
+Use a literal `#table` for every one-row measure table so Tabular Editor can read it. Do not use the compressed `Binary.Decompress`/JSON expression produced by **Enter Data**.
 
 ```powerquery
-let
-    Source = #table(
-        type table [Calculation = Int64.Type],
-        {{0}}
-    )
-in
-    Source
+#table(type table [Calculation = Int64.Type], {{0}})
 ```
 
-## Query order
-
-Order Power Query groups as follows:
+## Power Query group-order standards
 
 1. Parameters
 2. Dimensions
-3. Facts
-   1. Fact Measure Tables
-   2. Fact Attributes
-4. Measure Tables
+3. Facts — Fact Measure Hosts, then Fact Attributes
+4. Calculation Tables
 5. Other Queries
 
 # Composite Models
 
-- Every composite-model family MUST designate exactly one `Primary` model.
-- Shared dimensions MUST come from the Primary model.
-- Secondary models MUST contribute add-on facts after the Primary model.
-- Imported tables MUST retain their source names during composite-model assembly.
+## Standards
 
-`Finance + Project Accounting` uses Finance as Primary and Project Accounting as an add-on. SIOP uses Inventory as Primary and Project Management as an add-on.
+### Composite model structure standards
 
-## Large dimensions
+- Designate exactly one Primary model in each composite-model family.
+- Take shared dimensions from Primary; add facts from secondary models afterward.
+- Keep imported table names unchanged.
 
-Large or high-cardinality dimensions, such as Voucher, can cause model-size and memory errors in composite models.
+`Finance + Project Accounting`: Finance is Primary; Project Accounting adds facts. For SIOP, Inventory is Primary and Project Management adds facts.
 
-- These dimensions MUST NOT be included in a composite model by default.
-- A required large dimension MUST be validated for model size, memory use, and successful deployment before adoption.
+### Large dimension validation standards
+
+When a large or high-cardinality dimension such as Voucher is required, validate model size, memory use, and successful deployment before adopting it.
+
+## Default positions
+
+### Composite dimension defaults
+
+Exclude large or high-cardinality dimensions such as Voucher by default; they can cause model-size and memory errors.
 
 ## Open decisions (non-normative)
 
-- Whether Production participates in the SIOP composite model.
+Whether Production participates in SIOP.
 
 # Fact Measure and Attribute Tables
 
-## Table structure
+## Fact table structure standards
 
-- A fact with report-facing attributes MUST use a source-backed `{Fact Table} Attributes` table and a paired one-row `{Fact Table}` measure host.
-- Report-facing fields MUST remain in the Attributes table and measures in the measure host. For example, use `Ledger Transaction Attributes` and `Ledger Transactions`.
-- A fact without report-facing attributes MAY remain one source-backed table and MAY be split later when attributes are added.
+- A fact with report-facing attributes uses a source-backed `{Fact Table} Attributes` table and a paired one-row `{Fact Table}` measure table.
+- Keep fields in Attributes and measures in the measure table.
+- A fact without report-facing attributes can remain one source-backed table and be split later.
 
-## Display folders
+| Table | Contents |
+|---|---|
+| Ledger Transaction Attributes | Source rows and fields |
+| Ledger Transactions | One-row table holding measures |
 
-Use these folders when the corresponding fields exist:
+## Calculation table standards
 
-- `Attributes`
-- `Keys`; hide every field in this folder.
-- `Numbers`; hide every field in this folder.
+- Put measures associated with one fact in its measure table.
+- Every model includes `Ad Hoc Calculations` for measures authored inside reports, primarily for testing.
+- Put measures spanning facts that do not belong to a single fact's measure table in `Multi-Fact Calculations`.
+- Hide the technical `Calculation` field in every measure table.
+
+## Fact display-folder standards
+
+Use these folders when the fields exist:
+
+| Folder | Visibility |
+|---|---|
+| Attributes | Report-facing fields |
+| Keys | All fields hidden |
+| Numbers | All fields hidden |
 
 # Relationships
 
-## Model shape
+## Standards
 
-- Use a star schema unless an approved project requirement overrides it.
-- Keep dimensions flat; do not introduce relationship chains through intermediate dimension tables as the default shape.
-- Relationships MUST define the fact table first and the dimension table second, with `N:1` cardinality.
+### Relationship key standards
 
-## Keys
+- Define the fact first and dimension second, with `N:1` cardinality.
+- Use `int64` relationship keys, hide them, and set summarization to none.
 
-- Relationship key columns MUST use exact numeric types such as `int64` or `decimal`, not floating-point `double`.
-- Hide relationship keys on the many side from report view.
-- Set numeric relationship keys to `summarizeBy: none`.
+```text
+Sales[FKCustomer] → Customer[PKCustomer] (N:1)
+```
 
-## Filter direction
+### Inactive relationship standards
 
-- Physical bidirectional relationships MUST NOT be the default.
-- Use targeted `CROSSFILTER` in the applicable measure when temporary bidirectional propagation is required, unless an approved project override requires a physical bidirectional relationship.
+Every inactive relationship needs an intentional `USERELATIONSHIP()` consumer. Remove inactive relationships with no consumer.
 
-## Inactive relationships
+```dax
+USERELATIONSHIP(FactSales[FKShipDate], 'Date'[PKDate])
+```
 
-Every inactive relationship MUST have at least one intentional `USERELATIONSHIP()` consumer. Remove inactive relationships without a consumer.
+### FKNULL relationship standards
 
-## FKNULL relationships
+Use `FKNULL` only when the fact and dimension cannot conceptually be joined. Never use it to replace a valid relationship with missing, incomplete, or unmatched keys.
 
-An `FKNULL` relationship represents a fact-to-dimension relationship that does not and cannot conceptually exist. It MUST NOT replace a valid relationship whose key is unavailable, incomplete, or unmatched.
+Relate the fact's `FKNULL` column to the dimension key. Without a relationship, a visual can repeat the fact result for each dimension member. An active `FKNULL` relationship summarizes it under the blank/null member.
 
-- Relate the fact table's `FKNULL` column to the dimension key.
-- Create the relationship as active by default.
-- Without a relationship, a dimension visual can repeat the fact result for every dimension member.
-- With an active `FKNULL` relationship, the fact result is summarized under the dimension's blank/null member.
-- Adding an `FKNULL` relationship after reports are deployed can change existing visual results. Treat it as a potentially breaking model change and regression-test affected reports before deployment.
+Adding this after deployment can change report results. Regression-test affected reports before deployment.
 
-# Tables
+```text
+Sales[FKNULL] → UnrelatedDimension[PKDimension] (N:1)
+```
 
-## Naming
+## Default positions
+
+### Model shape defaults
+
+Use a star schema with flat dimensions. Avoid chains through intermediate dimension tables unless an approved project requirement overrides this shape.
+
+### Filter direction defaults
+
+Avoid physical bidirectional relationships. Use `CROSSFILTER` in the measure when temporary bidirectional filtering is needed, unless an approved project override requires a physical relationship.
+
+### FKNULL activation defaults
+
+Make `FKNULL` relationships active.
+
+# Organizing Semantic Model Tables
+
+## Table naming standards
 
 - Use PascalCase table and calculated-column names.
-- Column references MUST include the table name: `Table[Column]`.
+- Qualify column references with the table name.
 
-## Fields
+```dax
+Customer[CustomerGroup]
+```
+
+## Field formatting standards
 
 - Disable summarization for numeric columns not intended for aggregation.
-- Format dates as `mm/dd/yyyy`.
-- Display Boolean/BIT fields as `TRUE` / `FALSE`.
-- Convert date/time values to the client's primary time zone in SQL, not with a fixed UTC offset.
-- Display date/time values with the local date, time, and time-zone context, such as `10/06/2025 3:00 PM Eastern`.
-- Include the time zone in the converted column name, such as `Created Date ET`.
+- Format dates as `mm/dd/yyyy` and Boolean/BIT fields as `TRUE` / `FALSE`.
+- Convert timestamps to the client's primary time zone in SQL using time-zone conversion, never a fixed UTC offset.
+- Show the local date, time, and zone; include the zone in the column name.
 
-## Date table
+```text
+Created Date ET: 10/06/2025 3:00 PM Eastern
+```
 
-- Time intelligence MUST use one contiguous marked Date table.
-- Disable Power BI auto date/time. Remove `LocalDateTable_*` and `DateTableTemplate_*` tables.
-- Use `Calendar`, `Fiscal`, and `Relative` display folders when those fields exist.
+## Date table standards
 
-## Dimension folders
+- Use one contiguous, marked Date table for time intelligence.
+- Disable auto date/time and remove `LocalDateTable_*` and `DateTableTemplate_*` tables.
+- Use `Calendar`, `Fiscal`, and `Relative` folders when those fields exist.
 
-Dimension display folders are optional. When used, organize fields into logical subject groups.
+## Dimension folder standards
 
-## Hierarchies and sorting
+Dimension folders are optional. When used, group fields by subject.
 
-- Put ordered levels in a hierarchy.
-- A hierarchy MAY use any clear name.
-- Place first the field whose label can represent the hierarchy when a visual cannot rename it.
-- Sort Date-table strings by an integer or Date column.
-- Hide columns used only for sorting.
+## Hierarchy and sorting standards
 
-## Deployment
+- Put ordered levels in a hierarchy with a clear name.
+- Put first the field whose label can represent the hierarchy in visuals where it cannot be renamed.
+- Sort Date-table strings by an integer or Date column. Hide sort-only columns.
 
-- Direct Lake models MUST NOT contain unsupported calculated columns.
-- Direct Lake source table names MUST match the source exactly.
+```text
+Month Name → sort by Month Number (hidden)
+```
+
+## Semantic model deployment standards
+
+- Do not use unsupported calculated columns in Direct Lake models.
+- Direct Lake table names match their source exactly.
 - Deploy semantic-model source with TMDL, not TMSL.
+
+## Open decisions (non-normative)
+
+Clarify the scope of PascalCase naming: approved measure-table names and report-facing column names contain spaces, and Direct Lake tables retain source names.

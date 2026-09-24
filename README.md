@@ -10,7 +10,8 @@ These articles describe expected output, not step-by-step implementation pattern
 
 ### General
 
-- [SQL Formatting](<SQL/SQL Formatting.md>)
+- [SQL Conventions](<SQL/SQL Conventions.md>)
+- [SQL Layout](<SQL/SQL Layout.md>)
 
 ### Silver
 

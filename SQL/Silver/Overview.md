@@ -9,16 +9,13 @@ status: active
 ---
 # Silver Deterministic Generation
 
-## Generation boundary
+## Silver generation standards
 
-- Silver objects MUST be produced by the approved deterministic process.
-- Generated Silver SQL MUST NOT be authored or altered by an LLM.
-- Changes to generated structure or behavior MUST be implemented in the source procedure or configuration.
+- Produce Silver objects through the approved deterministic process.
+- Do not use an LLM to author or alter generated Silver SQL.
+- Change generated structure or behavior in the source procedure or configuration.
+- Human-authored indexing standards are allowed; implement approved rules in the deterministic process.
 
-## Documented behavior
+## Source documentation pending (non-normative)
 
-The source procedures and configuration have not yet been provided. Add their approved transformation, naming, type, and indexing behavior here after direct review; do not infer it from generated output.
-
-## Human-authored standards
-
-Indexing rules MAY be human-authored. Route each approved article directly through `standards.yml` and implement its rules in the deterministic process.
+Source procedures and configuration have not been provided. Their transformation, naming, type, and indexing behavior remains undocumented; do not infer it from generated output.

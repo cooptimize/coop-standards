@@ -9,14 +9,18 @@ status: active
 ---
 # Power BI App Deployment
 
-## Workspaces
+## Standards
 
-A workspace represents one audience: a department or other group of users.
+### App logo standards
 
-## App audiences
+Create workspace and app logos in Canva: select an existing icon and apply the report theme colors.
 
-Do not divide an app into Power BI audiences by default. The additional management is rarely worth the benefit.
+## Default positions
 
-## Logos
+### Workspace audience defaults
 
-Create custom workspace and app logos in Canva by selecting an existing icon and applying the report theme colors.
+Organize workspaces by department or user group. The workspace represents the audience.
+
+### App audience defaults
+
+Avoid dividing an app into Power BI audiences; the management overhead is rarely worth it.

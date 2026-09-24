@@ -24,13 +24,18 @@ Every machine running a shipped coop client resolves THIS repo through a pinned 
 
 ## Editing articles
 
+- Write for an experienced human reader first. Agent retrieval and execution are downstream uses; do not make article prose sound like instructions written only for an AI.
+- When an article contains both required rules and preferred choices, organize it under `## Standards` and `## Default positions`. Do not add an empty section when the article contains only one type.
+- Under `Standards`, write required rules as natural, direct instructions such as `Never use SELECT *`. Under `Default positions`, describe the starting choice for new work without presenting it as mandatory.
+- Name subsections for their status, such as `### Join standards` and `### Join defaults`, so independently retrieved sections remain clear.
+- Keep retrieval mechanics, routing behavior, and agent-editing instructions in `AGENTS.md` or repository tooling. Include them in an article only when they change how a human implements or reviews the standard.
 - Optimize active articles for the lowest practical input-token count. Assume the reader has working knowledge of the subject. State the rule, scope, and necessary exception directly; omit tutorials, background explanations, repeated rationale, and obvious examples.
 - Remove text that does not change implementation or review behavior.
-- Put the simplest possible code sample directly after the section it demonstrates. A short article MAY use one final `## Example`; otherwise use small local examples so each retrieved section is self-contained.
-- Examples show the intended result; they do not add requirements beyond the article text. Keep only the syntax needed to demonstrate the rules. Indexes, migration notes, discussion lists, and policy placeholders do not require code samples.
+- Put the simplest possible code sample directly after the section it demonstrates. Prefer one or two lines that show the intended shape. A snippet MAY be an incomplete fragment when compilation is irrelevant, such as `,ct.accountnum AS [Customer]`.
+- Examples show the intended result; they do not add requirements beyond the article text. Keep only the syntax needed to demonstrate the rules. Use one final `## Example` only when a short article is clearer that way. Indexes, migration notes, discussion lists, and policy placeholders do not require code samples.
 - Preserve the owner's meaning. Rewrite for clarity and consistency, but do not strengthen, weaken, or broaden a rule without explicit direction.
-- Use `MUST` and `MUST NOT` for requirements and `MAY` for explicit permission. Do not introduce unresolved `SHOULD`, `PREFER`, `generally`, `maybe`, or question-form policy.
-- Keep each article scoped to one layer, artifact, or technology. Put SQL presentation and structural conventions in `SQL/SQL Formatting.md`, Gold artifact rules under `SQL/Gold/`, and technology-specific rules under `Technology/`.
+- Outside a clearly labeled `Standards` / `Default positions` structure, use `MUST` and `MUST NOT` only when natural language would leave the requirement unclear. Use `MAY` for explicit permission. Do not introduce unresolved `SHOULD`, `PREFER`, `generally`, `maybe`, or question-form policy.
+- Keep each article scoped to one layer, artifact, or technology. Put SQL structural rules in `SQL/SQL Conventions.md`, mechanical presentation rules in `SQL/SQL Layout.md`, Gold artifact rules under `SQL/Gold/`, and technology-specific rules under `Technology/`.
 - Name maintained folders and Markdown articles under `SQL/`, `Power BI/`, and `Technology/` with concise, human-readable title case because their names are displayed in the index. Use spaces, preserve established abbreviations such as `DAX`, `SQL`, and `BI`, and use `Overview.md` for a folder-level introduction. Do not apply this rule to `standards/`, `deprecation/`, `scripts/`, `AGENTS.md`, or the root `README.md`.
 - Put Power BI semantic-model rules under `Power BI/Semantic Model/` and report rules under `Power BI/Reports/`. Keep DAX expression rules separate from measure-object rules.
 - Keep Gold fact-table and dimension-table standards in separate articles. Do not create a generic Gold tables article or route; retrieval must select `fact_table` or `dimension_table` explicitly.
@@ -41,7 +46,7 @@ Every machine running a shipped coop client resolves THIS repo through a pinned 
 - When the owner has not decided a policy, identify it briefly in a clearly non-normative section of the closest applicable article. Do not create a separate considerations article or choose a convention on the owner's behalf.
 - Ask focused questions about unresolved decisions when working interactively. Update the article after the owner answers.
 - Bias SQL terminology and examples toward Dynamics 365 Finance and Operations schemas, such as `CustTable`, `dataareaid`, and `customerid`. Preserve source-system spelling for source fields. Do not turn an example-specific D365 F&O name into a universal requirement unless the owner approves it as policy.
-- Make every active SQL code sample conform to `SQL/SQL Formatting.md`. When that article changes, update all active SQL examples; never alter examples under `deprecation/`.
+- Make every active SQL code sample conform to `SQL/SQL Conventions.md` and `SQL/SQL Layout.md`. When either article changes, update all active SQL examples; never alter examples under `deprecation/`.
 
 ## Article metadata
 

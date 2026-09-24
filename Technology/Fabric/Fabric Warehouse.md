@@ -7,13 +7,13 @@ artifact: agnostic
 technology: fabric_warehouse
 status: active
 ---
-# Fabric Warehouse Target Standards
+# Fabric Warehouse
 
 Applies only to Fabric Warehouse. Persisted-column type restrictions apply when defining persisted columns, including tables created inside a stored procedure; they are not restrictions on view output or Azure SQL columns.
 
-## Persisted column types
+## Fabric persisted-column standards
 
-| MUST NOT use | Use instead |
+| Do not use | Use instead |
 |---|---|
 | `nvarchar`, `nchar` | `varchar`, `char` |
 | `datetime`, `smalldatetime` | `datetime2` |
@@ -27,13 +27,21 @@ Applies only to Fabric Warehouse. Persisted-column type restrictions apply when 
 | `geography`, `geometry` | latitude/longitude columns, WKB `varbinary`, or WKT `varchar` |
 | `hierarchyid`, CLR user-defined types | a supported native type |
 
-These persisted-column restrictions MUST NOT be applied to Azure SQL targets. `coop-sql-review` MUST use its Azure SQL target mode when reviewing Azure SQL.
+Do not apply these persisted-column restrictions to Azure SQL. Select Azure SQL target mode when reviewing Azure SQL with `coop-sql-review`.
 
-## Persisted expression types
+## Fabric persisted-expression standards
 
-CTAS projections MUST explicitly cast expressions whose resulting type must be controlled, including aggregate outputs used as persisted columns.
+In CTAS projections, explicitly cast expressions when the persisted type needs to be controlled, including aggregate outputs.
 
-## Connections
+```sql
+     ,CAST(SUM(sl.lineamount) AS decimal(19,4)) AS [SalesAmount]
+```
 
-- Fabric Warehouse `sqlcmd` calls MUST specify the database with `-d`.
-- Fabric Warehouse connections MUST use Microsoft Entra authentication (`-G`); SQL authentication MUST NOT be used.
+## Fabric connection standards
+
+- Specify the database with `-d` in Fabric Warehouse `sqlcmd` calls.
+- Use Microsoft Entra authentication (`-G`), never SQL authentication.
+
+```text
+sqlcmd -S <warehouse-endpoint> -d <database> -G
+```

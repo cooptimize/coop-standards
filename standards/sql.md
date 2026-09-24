@@ -1,342 +1,371 @@
 <!-- ASSEMBLED from structured articles by scripts/assemble.py.
-     Edit the source article under sql/, powerbi/, or tech/ and re-run
+     Edit the source article under SQL/, Power BI/, or Technology/ and re-run
      `python3 scripts/assemble.py`. Do not hand-edit sections here. -->
 
-# SQL Formatting Rules
+# SQL Conventions
 
-## SELECT
+Standards are required. Default positions are starting choices for new code; follow an existing statement’s consistent style during targeted edits.
 
-- In multiline lists, place each comma one character left of the first expression and use no space after it, so all expressions align.
-- Use explicit projections; `SELECT *` MUST NOT be used.
-- Every table and CTE reference MUST use an alias, even when only one source is referenced.
-- Default aliases MUST be recognizable abbreviations of the source name, such as `salesline AS sl` and `salestable AS st`.
-- When the same source is joined more than once or a short alias is ambiguous, append the source's role, such as `custtable AS ct_order` and `custtable AS ct_invoice`.
-- Single-letter and ordinal aliases such as `t1` MUST NOT be used.
-- In `INSERT ... SELECT`, every expression MUST be aliased to its exact target column.
+## Standards
 
-## CTEs
+### SELECT standards
 
-- Put `WITH` on its own line. Align CTE names; place each continuation comma one character left of the name with no following space.
-- Name CTEs for their transformation, such as `ActiveCustomers`.
-- Multi-step transformations MUST use CTEs instead of nested derived tables.
-- Filter business rows in CTEs before joins.
-- CTEs MUST preserve source field names unless a rename is required for the transformation. Apply target names in the final projection.
+- Use explicit projections. Never use `SELECT *`.
+- In `INSERT ... SELECT`, alias every expression to its exact target column.
 
-## Joins
+```sql
+     ,ct.accountnum AS [Customer]
+```
 
-- Only `INNER JOIN` and `LEFT JOIN` MAY be used. Bare `JOIN`, `RIGHT JOIN`, and `FULL OUTER JOIN` MUST NOT be used.
-- Order multi-column join predicates from the broadest key to the most specific. For D365 F&O, place `dataareaid` first.
-- In each join predicate, place the source-table expression first and the joined-table expression second.
-- `ON` clauses MUST contain only relationship predicates; `CASE` expressions and filter functions MUST NOT appear in them.
+### Alias standards
 
-## EXISTS
+- Alias every table and CTE reference, even when only one source is referenced.
+- Do not use single-letter or ordinal aliases such as `t1`.
+- Enclose every column alias in brackets, such as `AS [Customer Name]`.
+- Do not bracket source identifiers unless required.
+- When an existing output contract requires a SQL reserved word as an alias, enclose it in brackets.
 
-- `EXISTS` and `NOT EXISTS` MAY be used.
-- Each use MUST have a comment stating the tested condition and why it is used.
+```sql
+FROM d365fo.custtable AS ct
+```
 
-## Example
+### CTE standards
+
+- Use CTEs instead of nested derived tables for multi-step transformations.
+- Preserve source field names through CTEs unless the transformation requires a rename. Apply target names in the final projection.
 
 ```sql
 WITH
-     ActiveCustomers AS
-     (
-         SELECT
-               ct.accountnum
-              ,ct.dataareaid
-              ,ct.custgroup
-         FROM bronze.raw_custtable AS ct
-         WHERE ct.blocked = 0
-     )
-SELECT
-      ac.accountnum AS Customer
-     ,cg.name AS CustomerGroup
-FROM ActiveCustomers AS ac
-INNER JOIN bronze.raw_custgroup AS cg
-    ON ac.dataareaid = cg.dataareaid
-    AND ac.custgroup = cg.custgroup
-WHERE EXISTS
-(
-    -- Tests for customer transactions without multiplying customer rows.
-    SELECT 1
-    FROM bronze.raw_custtrans AS ctr
-    WHERE ctr.dataareaid = ac.dataareaid
-        AND ctr.accountnum = ac.accountnum
-);
+     ActiveCustomers AS (...)
 ```
 
+### Join standards
+
+- Never use `RIGHT JOIN`.
+- Keep `ON` clauses limited to relationship predicates. Do not place `CASE` expressions or filter functions in them.
+
 ```sql
-INSERT INTO dim.Customer
-(
-      dataareaid
-     ,customerid
-     ,Customer
-)
+LEFT JOIN dim.Customer AS cust
+    ON sl.customerid = cust.customerid
+```
+
+### EXISTS standards
+
+- `EXISTS` and `NOT EXISTS` are allowed.
+- Add a comment stating the tested condition and why `EXISTS` is used.
+
+```sql
+-- Tests for customer sales without multiplying rows.
+WHERE EXISTS (...)
+```
+
+## Default positions
+
+### Defaults when editing existing code
+
+- `JOIN` versus `INNER JOIN`, optional `AS`, and equality-operand order are nonfunctional differences. They are not defects in existing code.
+- Preserve the statement's established style during a targeted edit. Do not change unrelated code solely to enforce a default.
+- Use one style consistently within each statement.
+
+### Alias defaults
+
+- Use recognizable source abbreviations, such as `salesline AS sl` and `salestable AS st`.
+- When a source is joined more than once or an abbreviation is ambiguous, append its role, such as `custtable AS ct_order` and `custtable AS ct_invoice`.
+- Use `AS` for table, CTE, and column aliases.
+- Avoid SQL reserved words as aliases.
+
+```sql
+custtable AS ct_order
+custtable AS ct_invoice
+```
+
+### CTE defaults
+
+- Name CTEs for their transformation, such as `ActiveCustomers`.
+- Filter business rows in CTEs before joins.
+
+```sql
+ActiveCustomers AS (...)
+```
+
+### Join defaults
+
+- Use explicit `INNER JOIN` or `LEFT JOIN` for new and fully rewritten statements.
+- Use `LEFT JOIN`, not `LEFT OUTER JOIN`; omit the optional `OUTER` keyword.
+- Do not use `FULL OUTER JOIN` by default.
+- Order multi-column predicates from the broadest key to the most specific. For D365 F&O, place `dataareaid` first.
+- Place the table already in the `FROM`/join chain first and the table introduced by that `JOIN` second.
+
+```sql
+INNER JOIN d365fo.salestable AS st
+    ON sl.dataareaid = st.dataareaid
+```
+
+# SQL Layout
+
+These rules define how SQL is displayed. Apply them to new or fully reformatted statements. During a targeted edit, leave unrelated formatting alone.
+
+## SELECT layout standards
+
+- In multiline lists, place each comma one character left of the first expression with no following space.
+- Within each contiguous projection section, align column-alias `AS` keywords at the same visual column. A blank line or organizing comment starts a new section.
+- Do not align `AS` used for tables, CTEs, or `CREATE ... AS`.
+
+```sql
 SELECT
-      ct.dataareaid AS dataareaid
-     ,ct.accountnum AS customerid
-     ,ct.accountnum AS Customer
-FROM bronze.raw_custtable AS ct;
+      ct.accountnum AS [Customer]
+     ,ct.name       AS [Customer Name]
+```
+
+## CTE layout standards
+
+- Put `WITH` on its own line.
+- Align CTE names. Place each continuation comma one character left of the CTE name with no following space.
+
+```sql
+WITH
+     ActiveCustomers AS (...)
+    ,SalesOrders AS (...)
+```
+
+## Join layout standards
+
+Indent `ON` four spaces beneath the join and each additional predicate four spaces beneath `ON`.
+
+```sql
+INNER JOIN d365fo.salestable AS st
+    ON ct.dataareaid = st.dataareaid
+        AND ct.accountnum = st.custaccount
 ```
 
 # Silver Deterministic Generation
 
-## Generation boundary
+## Silver generation standards
 
-- Silver objects MUST be produced by the approved deterministic process.
-- Generated Silver SQL MUST NOT be authored or altered by an LLM.
-- Changes to generated structure or behavior MUST be implemented in the source procedure or configuration.
+- Produce Silver objects through the approved deterministic process.
+- Do not use an LLM to author or alter generated Silver SQL.
+- Change generated structure or behavior in the source procedure or configuration.
+- Human-authored indexing standards are allowed; implement approved rules in the deterministic process.
 
-## Documented behavior
+## Source documentation pending (non-normative)
 
-The source procedures and configuration have not yet been provided. Add their approved transformation, naming, type, and indexing behavior here after direct review; do not infer it from generated output.
-
-## Human-authored standards
-
-Indexing rules MAY be human-authored. Route each approved article directly through `standards.yml` and implement its rules in the deterministic process.
+Source procedures and configuration have not been provided. Their transformation, naming, type, and indexing behavior remains undocumented; do not infer it from generated output.
 
 # Gold Stored Procedures
 
-## Responsibility
+Convert raw data into the final Gold fact or dimension shape. Organize applicable work as Removal, Gather, Transform, and Write. Loading recipes belong in the separate patterns knowledge base.
 
-- Convert source-shaped data into the final Gold fact or dimension shape and write it to the target.
-- Keep joins, filters, derivations, and business transformations in stored procedures rather than views.
-- Organize applicable work as Removal, Gather, Transform, and Write.
-- Phase comments MAY separate long procedures. Explanatory comments MUST state why a non-obvious choice exists, not narrate the SQL.
+## Removal standards
 
-## Removal
-
-- Remove target data only when required by the selected loading pattern.
-- Loading-pattern and technology guidance determine whether to use `TRUNCATE`, `DELETE`, or another removal method.
+Remove existing data only when the selected loading pattern requires it. The pattern and target technology determine whether to use `TRUNCATE`, `DELETE`, or another method.
 
 ```sql
--- A full refresh requires the prior snapshot to be removed.
 TRUNCATE TABLE fact.Sales;
 ```
 
-## Gather
+## Gather standards
 
-- Gather required source data with CTEs or temporary tables.
-- Formatting rules govern CTE layout and intermediate field names.
+Gather source data with CTEs or temporary tables. Preserve intermediate field names according to SQL Conventions.
 
 ```sql
-SELECT
-      sl.dataareaid
-     ,st.custaccount
-     ,sl.salesid
-     ,sl.lineamount
-INTO #SalesLines
 FROM d365fo.salesline AS sl
 INNER JOIN d365fo.salestable AS st
     ON sl.dataareaid = st.dataareaid
-    AND sl.salesid = st.salesid;
+        AND sl.salesid = st.salesid
 ```
 
-## Transform
+## Transformation standards
 
-- Resolve keys, joins, derivations, and other business logic into the final row shape.
-- Apply target field names only in the final write projection.
+Resolve keys, joins, filters, and business transformations in the stored procedure. Apply target field names in the final write projection.
 
 ```sql
-SELECT
-      cust.PKCustomer
-     ,sl.custaccount
-     ,sl.salesid
-     ,sl.lineamount
-INTO #FinalSales
-FROM #SalesLines AS sl
 INNER JOIN dim.Customer AS cust
     ON sl.dataareaid = cust.dataareaid
-    AND sl.custaccount = cust.customerid;
+        AND sl.custaccount = cust.customerid
 ```
 
-## Write
+## Write standards
 
-- Write the completed rowset without adding business logic.
-- Loading-pattern and technology guidance determine whether to use `INSERT`, `MERGE`, or another method.
+Write the completed rows without adding business logic. The loading pattern and target technology determine whether to use `INSERT`, `MERGE`, or another method.
 
 ```sql
-INSERT INTO fact.Sales
-(
-      FKCustomer
-     ,Customer
-     ,SalesOrder
-     ,SalesAmount
-)
+INSERT INTO fact.Sales (FKCustomer,SalesAmount)
 SELECT
-      fs.PKCustomer AS FKCustomer
-     ,fs.custaccount AS Customer
-     ,fs.salesid AS SalesOrder
-     ,fs.lineamount AS SalesAmount
+      fs.PKCustomer AS [FKCustomer]
+     ,fs.lineamount AS [SalesAmount]
 FROM #FinalSales AS fs;
+```
+
+## Comment standards
+
+Explain why a non-obvious choice exists; do not narrate the SQL. Phase comments are allowed to separate long procedures.
+
+```sql
+-- A full refresh requires the prior snapshot to be removed.
 ```
 
 ## Preventing empty or partial tables
 
-- Wrap removal and writing in one explicit transaction when DirectQuery, integrations, or other live consumers MUST see either the previous table contents or the completed replacement.
-- Use `BEGIN TRANSACTION`, then `COMMIT TRANSACTION` on success or `ROLLBACK TRANSACTION` on failure.
-- Keep the transaction limited to statements that must become visible together. Gather and transform before opening it when the loading pattern permits; long transactions can increase blocking, conflicts, and resource use.
-- Use this behavior only when required by the selected incremental or replacement strategy.
-- A standalone `MERGE` commits all of its changes together under autocommit. Use an explicit transaction when it must commit together with other statements.
+- Use an explicit transaction when DirectQuery, integrations, or other live consumers require removal and replacement to commit together.
+- Commit on success; roll back on failure.
+- Limit the transaction to statements that need to become visible together. Gather and transform beforehand when the loading pattern permits; long transactions increase blocking, conflicts, and resource use.
+- Use this only when required by the incremental or replacement strategy.
+- A standalone `MERGE` commits its changes together under autocommit. Use an explicit transaction when it needs to commit with other statements.
 
 ```sql
 BEGIN TRANSACTION;
-
-TRUNCATE TABLE fact.Sales;
-
-INSERT INTO fact.Sales (SalesAmount)
-SELECT fs.lineamount AS SalesAmount
-FROM #FinalSales AS fs;
-
+-- Removal and writing occur here; roll back on failure.
 COMMIT TRANSACTION;
 ```
 
 # Gold Fact Tables
 
-## Rules
+## Standards
 
-- Use the `fact` schema and a PascalCase table name.
-- Use PascalCase column names.
-- Name dimension references `FK{DimensionName}`, such as `FKCustomer`.
-- Name business-facing identifiers for the entity, such as `Customer`, not `CustomerId`.
-- Make columns nullable by default.
-- Do not add an identity column without a specific need.
-- Where supported, add non-unique indexes to columns used for joins. An index does not enforce a relationship or uniqueness.
+### Fact naming standards
 
-## Open decisions (non-normative)
-
-- Names for multiple roles referencing one dimension and optional fact identities.
-- Naming and types for currencies, quantities, percentages, dates, flags, codes, descriptions, and audit fields.
-- Index naming, column order, index type, and physical FK constraints.
-
-## Example
+- Use `fact` and PascalCase table and column names.
+- Name dimension references `FK{DimensionName}`.
+- Name business-facing identifiers for the entity: `Customer`, not `CustomerId`.
 
 ```sql
-CREATE TABLE fact.CustomerTransactions
-(
+CREATE TABLE fact.CustomerTransactions (...)
       FKCustomer bigint NULL
-     ,Customer varchar(20) NULL
-     ,Voucher varchar(20) NULL
-     ,AmountMST decimal(19,4) NULL
-);
+```
 
--- Where supported
+### Fact index standards
+
+Where supported, add non-unique indexes to join columns. Indexes do not enforce relationships or uniqueness.
+
+```sql
 CREATE INDEX IX_CustomerTransactions_FKCustomer
     ON fact.CustomerTransactions (FKCustomer);
 ```
 
-# Gold Dimension Tables
+## Default positions
 
-## Rules
+### Fact column defaults
 
-- Use the `dim` schema and a PascalCase table name.
-- Name the identity column `PK{DimensionName}`, such as `PKCustomer`, and use the target's standard identity behavior.
-- Preserve lowercase D365 F&O source names for nullable matching fields, such as `dataareaid` and `customerid`. Matching may use multiple fields and does not imply uniqueness.
-- Name business-facing identifiers for the entity without using "Id" or "id", such as `Customer`, not `CustomerId`.
-- Use PascalCase for all other columns.
-- Make all columns except the identity nullable by default.
-- Where supported, add a composite, non-unique index to fields used together for matching. The index does not enforce uniqueness.
-- Do not create a placeholder row for missing matches, such as key `-1` named `Unknown`.
+- Make columns nullable.
+- Add an identity column only when there is a specific need.
+
+```sql
+     ,Customer varchar(20) NULL
+     ,AmountMST decimal(19,4) NULL
+```
 
 ## Open decisions (non-normative)
 
-- Naming and types for numeric, date/time, flag, code, description, and audit fields.
-- Index naming, column order, index type, and physical identity-key constraints.
+- Names for multiple references to one dimension and optional fact identities.
+- Naming and types for currencies, quantities, percentages, dates, flags, codes, descriptions, and audit fields.
+- Index names, column order, index type, and physical foreign-key constraints.
 
-## Example
+# Gold Dimension Tables
+
+## Standards
+
+### Dimension naming standards
+
+- Use `dim` and a PascalCase table name.
+- Name the identity `PK{DimensionName}` and use the target's standard identity behavior.
+- Keep lowercase source names for business matching fields, such as `dataareaid` and `customerid`. These fields can be nullable, combined, and non-unique.
+- Name business-facing identifiers for the entity: `Customer`, not `CustomerId`. Use PascalCase for other columns.
 
 ```sql
-CREATE TABLE dim.Customer
-(
+CREATE TABLE dim.Customer (...)
       PKCustomer bigint IDENTITY NOT NULL
-     ,dataareaid varchar(4) NULL
-     ,customerid varchar(20) NULL
-     ,Customer varchar(20) NULL -- account number
-     ,CustomerName varchar(100) NULL
-);
-
--- Where supported
-CREATE INDEX IX_Customer_dataareaid_customerid
-    ON dim.Customer
-    (
-          dataareaid
-         ,customerid
-    );
 ```
+
+### Dimension matching standards
+
+- Where supported, index fields used together for matching with a composite, non-unique index.
+- Do not create an artificial missing-match row, such as key `-1` named `Unknown`.
+
+```sql
+CREATE INDEX IX_Customer_dataareaid_customerid
+    ON dim.Customer (dataareaid,customerid);
+```
+
+## Default positions
+
+### Dimension nullability defaults
+
+Make every column except the identity nullable. Population is controlled by the stored procedure.
+
+```sql
+     ,customerid varchar(20) NULL
+     ,CustomerName varchar(100) NULL
+```
+
+## Open decisions (non-normative)
+
+- Naming and types for numbers, dates, flags, codes, descriptions, and audit fields.
+- Index names, column order, index type, and physical constraints on the identity key.
 
 # Gold Views
 
-## View naming
+## View naming standards
 
-- Name views `{Schema}.{Entity}` with a PascalCase entity name.
-- Use the `common` schema for views shared by multiple semantic models; otherwise use the semantic-model name, such as `sales.Customer`.
-
-## Field organization
-
-- Organize dimension views under `--Keys` and `--Attributes`.
-- Organize fact views under `--Keys`, `--Attributes`, and `--Numbers`.
-- Every fact view MUST include `NULL AS FKNULL` under `--Keys`.
-- `--Numbers` MUST contain additive fact fields intended for `SUM`.
-- Keys and numbers MUST retain their source names without aliases.
-- Attributes MUST use friendly aliases with spaces, such as `CustomerName AS [Customer Name]`.
-
-## Additional dimension fields
-
-- A dimension view with an entity identifier and name MUST include both presentation fields:
-  - `{Entity} + ' • ' + {Entity}Name AS [{Entity} and Name]` for identifier-first reporting.
-  - `{Entity}Name + ' (' + {Entity} + ')' AS [Name and ({Entity})]` for alphabetical reporting.
-
-## Hidden fields
-
-- Helper join fields, including `dataareaid` and `customerid`, MUST NOT be exposed.
-
-## Transformations and joins
-
-- The two dimension presentation fields above are approved view transformations. Other transformations and all joins MUST NOT be used unless the user explicitly requests them and they are necessary. Transformations otherwise belong in stored procedures.
-- An approved exception MUST include a comment explaining why the join or transformation is necessary in the view.
-
-## Example
-
-### Dimension
+Use `{Schema}.{Entity}` with a PascalCase entity name. Use `common` for views shared by semantic models; otherwise use the model name.
 
 ```sql
 CREATE VIEW sales.Customer AS
+```
+
+## View field standards
+
+- Bracket every output alias, including unchanged names.
+- Organize dimensions under `--Keys` and `--Attributes`; add `--Numbers` for facts.
+- Include `NULL AS [FKNULL]` in every fact view's keys.
+- Keep key and number names unchanged. Numbers are additive fact fields intended for `SUM`.
+- Give attributes friendly names with spaces.
+- Exclude helper join fields such as `dataareaid` and `customerid`.
+
+### Dimension view example
+
+```sql
 SELECT
     --Keys
-      cust.PKCustomer
-
+      cust.PKCustomer   AS [PKCustomer]
     --Attributes
      ,cust.CustomerName AS [Customer Name]
-     ,cust.Customer + ' • ' + cust.CustomerName AS [Customer and Name]
-     ,cust.CustomerName + ' (' + cust.Customer + ')' AS [Name and (Customer)]
 FROM dim.Customer AS cust;
 ```
 
-### Fact
+### Fact view example
 
 ```sql
-CREATE VIEW sales.Sales AS
 SELECT
     --Keys
-      NULL AS FKNULL
-     ,sales.FKCustomer
-     ,sales.FKDate
-
+      NULL             AS [FKNULL]
+     ,sales.FKCustomer AS [FKCustomer]
     --Attributes
      ,sales.SalesOrder AS [Sales Order]
-
     --Numbers
-     ,sales.SalesAmount
-     ,sales.Quantity
+     ,sales.SalesAmount AS [SalesAmount]
 FROM fact.Sales AS sales;
 ```
 
-# Fabric Warehouse Target Standards
+## Dimension display-field standards
+
+When a dimension has an identifier and name, include both combined fields: identifier first for pivot reporting, and name first with the identifier in parentheses for alphabetical reporting.
+
+```sql
+     ,cust.Customer + ' • ' + cust.CustomerName      AS [Customer and Name]
+     ,cust.CustomerName + ' (' + cust.Customer + ')' AS [Name and (Customer)]
+```
+
+## View transformation standards
+
+The two dimension display fields above are approved transformations. Other transformations and all joins require an explicit user request, a necessity check, and a comment explaining the exception. Otherwise, put transformations in stored procedures.
+
+# Fabric Warehouse
 
 Applies only to Fabric Warehouse. Persisted-column type restrictions apply when defining persisted columns, including tables created inside a stored procedure; they are not restrictions on view output or Azure SQL columns.
 
-## Persisted column types
+## Fabric persisted-column standards
 
-| MUST NOT use | Use instead |
+| Do not use | Use instead |
 |---|---|
 | `nvarchar`, `nchar` | `varchar`, `char` |
 | `datetime`, `smalldatetime` | `datetime2` |
@@ -350,13 +379,21 @@ Applies only to Fabric Warehouse. Persisted-column type restrictions apply when 
 | `geography`, `geometry` | latitude/longitude columns, WKB `varbinary`, or WKT `varchar` |
 | `hierarchyid`, CLR user-defined types | a supported native type |
 
-These persisted-column restrictions MUST NOT be applied to Azure SQL targets. `coop-sql-review` MUST use its Azure SQL target mode when reviewing Azure SQL.
+Do not apply these persisted-column restrictions to Azure SQL. Select Azure SQL target mode when reviewing Azure SQL with `coop-sql-review`.
 
-## Persisted expression types
+## Fabric persisted-expression standards
 
-CTAS projections MUST explicitly cast expressions whose resulting type must be controlled, including aggregate outputs used as persisted columns. 
+In CTAS projections, explicitly cast expressions when the persisted type needs to be controlled, including aggregate outputs.
 
-## Connections
+```sql
+     ,CAST(SUM(sl.lineamount) AS decimal(19,4)) AS [SalesAmount]
+```
 
-- Fabric Warehouse `sqlcmd` calls MUST specify the database with `-d`.
-- Fabric Warehouse connections MUST use Microsoft Entra authentication (`-G`); SQL authentication MUST NOT be used.
+## Fabric connection standards
+
+- Specify the database with `-d` in Fabric Warehouse `sqlcmd` calls.
+- Use Microsoft Entra authentication (`-G`), never SQL authentication.
+
+```text
+sqlcmd -S <warehouse-endpoint> -d <database> -G
+```

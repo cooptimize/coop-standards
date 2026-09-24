@@ -9,23 +9,30 @@ status: active
 ---
 # Fact Measure and Attribute Tables
 
-## Table structure
+## Fact table structure standards
 
-- A fact with report-facing attributes MUST use a source-backed `{Fact Table} Attributes` table and a paired one-row `{Fact Table}` measure host.
-- Report-facing fields MUST remain in the Attributes table and measures in the measure host. For example, use `Ledger Transaction Attributes` and `Ledger Transactions`.
-- A fact without report-facing attributes MAY remain one source-backed table and MAY be split later when attributes are added.
+- A fact with report-facing attributes uses a source-backed `{Fact Table} Attributes` table and a paired one-row `{Fact Table}` measure table.
+- Keep fields in Attributes and measures in the measure table.
+- A fact without report-facing attributes can remain one source-backed table and be split later.
 
-## Measure hosts
+| Table | Contents |
+|---|---|
+| Ledger Transaction Attributes | Source rows and fields |
+| Ledger Transactions | One-row table holding measures |
 
-- Put a measure associated with one fact in that fact's measure host.
-- Every model MUST contain an `Ad Hoc Calculations` table. Measures authored inside a report MUST be placed there; these measures are primarily used for testing.
-- Put measures that span multiple facts and do not belong to one fact's measure host in `Multi-Fact Calculations`.
-- Hide the technical `Calculation` field in every measure host.
+## Calculation table standards
 
-## Display folders
+- Put measures associated with one fact in its measure table.
+- Every model includes `Ad Hoc Calculations` for measures authored inside reports, primarily for testing.
+- Put measures spanning facts that do not belong to a single fact's measure table in `Multi-Fact Calculations`.
+- Hide the technical `Calculation` field in every measure table.
 
-Use these folders when the corresponding fields exist:
+## Fact display-folder standards
 
-- `Attributes`
-- `Keys`; hide every field in this folder.
-- `Numbers`; hide every field in this folder.
+Use these folders when the fields exist:
+
+| Folder | Visibility |
+|---|---|
+| Attributes | Report-facing fields |
+| Keys | All fields hidden |
+| Numbers | All fields hidden |

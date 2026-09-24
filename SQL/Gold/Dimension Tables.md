@@ -9,39 +9,42 @@ status: active
 ---
 # Gold Dimension Tables
 
-## Rules
+## Standards
 
-- Use the `dim` schema and a PascalCase table name.
-- Name the identity column `PK{DimensionName}`, such as `PKCustomer`, and use the target's standard identity behavior.
-- Preserve lowercase D365 F&O source names for nullable matching fields, such as `dataareaid` and `customerid`. Matching may use multiple fields and does not imply uniqueness.
-- Name business-facing identifiers for the entity without using "Id" or "id", such as `Customer`, not `CustomerId`.
-- Use PascalCase for all other columns.
-- Make all columns except the identity nullable by default.
-- Where supported, add a composite, non-unique index to fields used together for matching. The index does not enforce uniqueness.
-- Do not create a placeholder row for missing matches, such as key `-1` named `Unknown`.
+### Dimension naming standards
+
+- Use `dim` and a PascalCase table name.
+- Name the identity `PK{DimensionName}` and use the target's standard identity behavior.
+- Keep lowercase source names for business matching fields, such as `dataareaid` and `customerid`. These fields can be nullable, combined, and non-unique.
+- Name business-facing identifiers for the entity: `Customer`, not `CustomerId`. Use PascalCase for other columns.
+
+```sql
+CREATE TABLE dim.Customer (...)
+      PKCustomer bigint IDENTITY NOT NULL
+```
+
+### Dimension matching standards
+
+- Where supported, index fields used together for matching with a composite, non-unique index.
+- Do not create an artificial missing-match row, such as key `-1` named `Unknown`.
+
+```sql
+CREATE INDEX IX_Customer_dataareaid_customerid
+    ON dim.Customer (dataareaid,customerid);
+```
+
+## Default positions
+
+### Dimension nullability defaults
+
+Make every column except the identity nullable. Population is controlled by the stored procedure.
+
+```sql
+     ,customerid varchar(20) NULL
+     ,CustomerName varchar(100) NULL
+```
 
 ## Open decisions (non-normative)
 
-- Naming and types for numeric, date/time, flag, code, description, and audit fields.
-- Index naming, column order, index type, and physical identity-key constraints.
-
-## Example
-
-```sql
-CREATE TABLE dim.Customer
-(
-      PKCustomer bigint IDENTITY NOT NULL
-     ,dataareaid varchar(4) NULL
-     ,customerid varchar(20) NULL
-     ,Customer varchar(20) NULL -- account number
-     ,CustomerName varchar(100) NULL
-);
-
--- Where supported
-CREATE INDEX IX_Customer_dataareaid_customerid
-    ON dim.Customer
-    (
-          dataareaid
-         ,customerid
-    );
-```
+- Naming and types for numbers, dates, flags, codes, descriptions, and audit fields.
+- Index names, column order, index type, and physical constraints on the identity key.
