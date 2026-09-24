@@ -31,7 +31,7 @@ In Power BI Desktop, expand **Home > Refresh** and choose **Sync schema only** d
 
 ## Fact query standards
 
-For a split fact, the Attributes query reads source rows. Its paired measure query contains one `Int64` column, `Calculation`, and one row with value `0`.
+For every fact, the Attributes query reads source rows. Its paired measure query contains one `Int64` column, `Calculation`, and one row with value `0`.
 
 Example: `Ledger Transaction Attributes` holds the data; `Ledger Transactions` holds measures.
 
@@ -50,7 +50,7 @@ Use a literal `#table` for every one-row measure table so Tabular Editor can rea
 1. Parameters
 2. Dimensions
 3. Facts — Fact Measure Hosts, then Fact Attributes
-4. Calculation Tables — the `Ad Hoc Calculations` and `Multi-Fact Calculations` measure tables, not calculation groups or DAX calculated tables
+4. Calculation Tables — the `Ad Hoc Calculations` and `Multi-Fact {Model} Calculations` measure tables, not calculation groups or DAX calculated tables
 5. Other Queries — supporting queries and functions outside the groups above
 
 ## Open decisions (non-normative)

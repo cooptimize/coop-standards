@@ -155,7 +155,7 @@ In Power BI Desktop, expand **Home > Refresh** and choose **Sync schema only** d
 
 ## Fact query standards
 
-For a split fact, the Attributes query reads source rows. Its paired measure query contains one `Int64` column, `Calculation`, and one row with value `0`.
+For every fact, the Attributes query reads source rows. Its paired measure query contains one `Int64` column, `Calculation`, and one row with value `0`.
 
 Example: `Ledger Transaction Attributes` holds the data; `Ledger Transactions` holds measures.
 
@@ -174,7 +174,7 @@ Use a literal `#table` for every one-row measure table so Tabular Editor can rea
 1. Parameters
 2. Dimensions
 3. Facts — Fact Measure Hosts, then Fact Attributes
-4. Calculation Tables — the `Ad Hoc Calculations` and `Multi-Fact Calculations` measure tables, not calculation groups or DAX calculated tables
+4. Calculation Tables — the `Ad Hoc Calculations` and `Multi-Fact {Model} Calculations` measure tables, not calculation groups or DAX calculated tables
 5. Other Queries — supporting queries and functions outside the groups above
 
 ## Open decisions (non-normative)
@@ -217,9 +217,9 @@ Whether Production participates in SIOP.
 
 ## Fact table structure standards
 
-- A fact with report-facing attributes uses a source-backed Attributes table and a paired one-row measure table named for the fact.
+- Every fact uses a source-backed Attributes table and a paired one-row measure table named for the fact, even when no report-facing attributes are currently needed.
 - Keep fields in Attributes and measures in the measure table.
-- A fact without report-facing attributes can remain one source-backed table and be split later.
+- Create the pair from the start so adding attributes later does not require restructuring the model.
 
 | Table | Contents |
 |---|---|
@@ -230,8 +230,8 @@ Whether Production participates in SIOP.
 
 - Put measures associated with one fact in its measure table.
 - Every model includes `Ad Hoc Calculations` for measures authored inside reports, primarily for testing.
-- Put measures spanning facts that do not belong to a single fact's measure table in `Multi-Fact Calculations`.
-- Hide the technical `Calculation` field in every measure table.
+- Put measures spanning facts that do not belong to a single fact's measure table in `Multi-Fact {Model} Calculations`, such as `Multi-Fact Finance Calculations`. The model name distinguishes these tables when models are combined.
+- After creating the first measure in a measure table, hide its technical `Calculation` field.
 
 ## Fact display-folder standards
 
@@ -299,7 +299,7 @@ Make `FKNULL` relationships active.
 
 ## Table naming standards
 
-- Use PascalCase table and calculated-column names.
+- Use PascalCase table and calculated-column names unless a more specific naming rule applies. Approved measure-table names and friendly report-facing column names contain spaces; Direct Lake table names match their source exactly.
 - Qualify column references with the table name.
 
 ```dax
@@ -308,7 +308,7 @@ Customer[CustomerGroup]
 
 ## Field formatting standards
 
-- Disable summarization for numeric columns not intended for aggregation.
+- Disable summarization for numeric columns not intended for aggregation, especially visible fields such as Year and Line Number. Hiding a field and disabling summarization are separate settings.
 - Format dates as `mm/dd/yyyy` and Boolean/BIT fields as `TRUE` / `FALSE`.
 - Convert timestamps to the client's primary time zone in SQL using time-zone conversion, never a fixed UTC offset.
 - Show the local date, time, and zone; include the zone in the column name.
@@ -337,12 +337,20 @@ Dimension folders are optional. When used, group fields by subject.
 Month Name → sort by Month Number (hidden)
 ```
 
+For a `Product` hierarchy with Category → Subcategory → Product levels, Category is the first field. Check that its label is suitable when a visual displays that label for the hierarchy and cannot rename it.
+
 ## Semantic model deployment standards
 
-- Do not use unsupported calculated columns in Direct Lake models.
+- Before adding calculated columns to a Direct Lake model, check Microsoft's current [Direct Lake limitations](https://learn.microsoft.com/en-us/fabric/fundamentals/direct-lake-overview#considerations-and-limitations) for the specific Direct Lake mode. Do not use unsupported features.
 - Direct Lake table names match their source exactly.
 - Deploy semantic-model source with TMDL, not TMSL.
 
 ## Open decisions (non-normative)
 
-Clarify the scope of PascalCase naming: approved measure-table names and report-facing column names contain spaces, and Direct Lake tables retain source names.
+- Whether timestamp names should explicitly include `Time`, and whether the displayed value needs a zone when the column name already includes it. The current approved example remains `Created Date ET: 10/06/2025 3:00 PM Eastern`.
+- How clients with multiple time zones choose the reporting zone, and where that choice is configured.
+- Date-table range, fiscal-calendar source, and whether the table is supplied by SQL or DAX.
+
+## References (non-normative)
+
+- [Microsoft: Direct Lake overview and limitations](https://learn.microsoft.com/en-us/fabric/fundamentals/direct-lake-overview)

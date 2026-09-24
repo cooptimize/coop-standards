@@ -11,9 +11,9 @@ status: active
 
 ## Fact table structure standards
 
-- A fact with report-facing attributes uses a source-backed Attributes table and a paired one-row measure table named for the fact.
+- Every fact uses a source-backed Attributes table and a paired one-row measure table named for the fact, even when no report-facing attributes are currently needed.
 - Keep fields in Attributes and measures in the measure table.
-- A fact without report-facing attributes can remain one source-backed table and be split later.
+- Create the pair from the start so adding attributes later does not require restructuring the model.
 
 | Table | Contents |
 |---|---|
@@ -24,8 +24,8 @@ status: active
 
 - Put measures associated with one fact in its measure table.
 - Every model includes `Ad Hoc Calculations` for measures authored inside reports, primarily for testing.
-- Put measures spanning facts that do not belong to a single fact's measure table in `Multi-Fact Calculations`.
-- Hide the technical `Calculation` field in every measure table.
+- Put measures spanning facts that do not belong to a single fact's measure table in `Multi-Fact {Model} Calculations`, such as `Multi-Fact Finance Calculations`. The model name distinguishes these tables when models are combined.
+- After creating the first measure in a measure table, hide its technical `Calculation` field.
 
 ## Fact display-folder standards
 
