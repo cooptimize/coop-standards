@@ -9,7 +9,9 @@ status: active
 ---
 # M Query
 
-## Connection parameter standards
+## Standards
+
+### Connection parameter standards
 
 - Use `SQLServer` and `SQLDB` connection parameters.
 - Do not use `PartialData`, the legacy development data-limiting parameter, in new models.
@@ -25,11 +27,7 @@ in
     Result
 ```
 
-## Development refresh standards
-
-In Power BI Desktop, expand **Home > Refresh** and choose **Sync schema only** during development. Load imported data after deploying the semantic model.
-
-## Fact query standards
+### Fact query standards
 
 For every fact, the Attributes query reads source rows. Its paired measure query contains one `Int64` column, `Calculation`, and one row with value `0`.
 
@@ -37,7 +35,7 @@ Example: `Ledger Transaction Attributes` holds the data; `Ledger Transactions` h
 
 Table placement and visibility are defined in [Fact Tables](<Fact Tables.md>).
 
-## Measure table query standards
+### Measure table query standards
 
 Use a literal `#table` for every one-row measure table so Tabular Editor can read it. Do not use the compressed `Binary.Decompress`/JSON expression produced by **Enter Data**.
 
@@ -45,13 +43,21 @@ Use a literal `#table` for every one-row measure table so Tabular Editor can rea
 #table(type table [Calculation = Int64.Type], {{0}})
 ```
 
-## Power Query group-order standards
+### Power Query group-order standards
 
 1. Parameters
 2. Dimensions
 3. Facts — Fact Measure Hosts, then Fact Attributes
 4. Calculation Tables — the `Ad Hoc Calculations` and `Multi-Fact {Model} Calculations` measure tables, not calculation groups or DAX calculated tables
 5. Other Queries — supporting queries and functions outside the groups above
+
+## Default positions
+
+### Development refresh defaults
+
+Use **Home > Refresh > Sync schema only** in Power BI Desktop when developing without loading data. Local data loads are allowed whenever useful for development or testing; they do not need to wait for deployment.
+
+Power BI's built-in refresh options replace the need for `PartialData`, the old filter used to limit development data loads.
 
 ## Open decisions (non-normative)
 

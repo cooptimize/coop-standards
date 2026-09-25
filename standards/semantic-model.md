@@ -133,7 +133,9 @@ Clarify whether the cell-shading prohibition excludes alternating row background
 
 # M Query
 
-## Connection parameter standards
+## Standards
+
+### Connection parameter standards
 
 - Use `SQLServer` and `SQLDB` connection parameters.
 - Do not use `PartialData`, the legacy development data-limiting parameter, in new models.
@@ -149,11 +151,7 @@ in
     Result
 ```
 
-## Development refresh standards
-
-In Power BI Desktop, expand **Home > Refresh** and choose **Sync schema only** during development. Load imported data after deploying the semantic model.
-
-## Fact query standards
+### Fact query standards
 
 For every fact, the Attributes query reads source rows. Its paired measure query contains one `Int64` column, `Calculation`, and one row with value `0`.
 
@@ -161,7 +159,7 @@ Example: `Ledger Transaction Attributes` holds the data; `Ledger Transactions` h
 
 Table placement and visibility are defined in [Fact Tables](<Fact Tables.md>).
 
-## Measure table query standards
+### Measure table query standards
 
 Use a literal `#table` for every one-row measure table so Tabular Editor can read it. Do not use the compressed `Binary.Decompress`/JSON expression produced by **Enter Data**.
 
@@ -169,13 +167,21 @@ Use a literal `#table` for every one-row measure table so Tabular Editor can rea
 #table(type table [Calculation = Int64.Type], {{0}})
 ```
 
-## Power Query group-order standards
+### Power Query group-order standards
 
 1. Parameters
 2. Dimensions
 3. Facts — Fact Measure Hosts, then Fact Attributes
 4. Calculation Tables — the `Ad Hoc Calculations` and `Multi-Fact {Model} Calculations` measure tables, not calculation groups or DAX calculated tables
 5. Other Queries — supporting queries and functions outside the groups above
+
+## Default positions
+
+### Development refresh defaults
+
+Use **Home > Refresh > Sync schema only** in Power BI Desktop when developing without loading data. Local data loads are allowed whenever useful for development or testing; they do not need to wait for deployment.
+
+Power BI's built-in refresh options replace the need for `PartialData`, the old filter used to limit development data loads.
 
 ## Open decisions (non-normative)
 
@@ -229,7 +235,9 @@ Whether Production participates in SIOP.
 ## Calculation table standards
 
 - Put measures associated with one fact in its measure table.
-- Every model includes `Ad Hoc Calculations` for measures authored inside reports, primarily for testing.
+- Every semantic model includes an `Ad Hoc Calculations` measure table with no measures defined in the semantic model. Its technical `Calculation` column and one-row structure remain.
+- Use `Ad Hoc Calculations` for measures that exist only in a connected report: report-specific measures such as dynamic titles, tests, and proofs of concept.
+- If a measure is generally useful, define it in the semantic model's appropriate fact measure table or multi-fact calculation table instead.
 - Put measures spanning facts that do not belong to a single fact's measure table in `Multi-Fact {Model} Calculations`, such as `Multi-Fact Finance Calculations`. The model name distinguishes these tables when models are combined.
 - After creating the first measure in a measure table, hide its technical `Calculation` field.
 

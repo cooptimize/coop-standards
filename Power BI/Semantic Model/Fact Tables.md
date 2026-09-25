@@ -23,7 +23,9 @@ status: active
 ## Calculation table standards
 
 - Put measures associated with one fact in its measure table.
-- Every model includes `Ad Hoc Calculations` for measures authored inside reports, primarily for testing.
+- Every semantic model includes an `Ad Hoc Calculations` measure table with no measures defined in the semantic model. Its technical `Calculation` column and one-row structure remain.
+- Use `Ad Hoc Calculations` for measures that exist only in a connected report: report-specific measures such as dynamic titles, tests, and proofs of concept.
+- If a measure is generally useful, define it in the semantic model's appropriate fact measure table or multi-fact calculation table instead.
 - Put measures spanning facts that do not belong to a single fact's measure table in `Multi-Fact {Model} Calculations`, such as `Multi-Fact Finance Calculations`. The model name distinguishes these tables when models are combined.
 - After creating the first measure in a measure table, hide its technical `Calculation` field.
 
