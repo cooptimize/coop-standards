@@ -4,14 +4,15 @@ This repository contains human-approved policy. Treat the article text as the pr
 
 ## Shipped-client contract (governs every edit today)
 
-Every machine running a shipped coop client resolves THIS repo through a pinned v1 authority contract compiled into the client. It is not negotiable by editing this repo, and violating it silently disables your edits on every client (they fail closed to the last valid revision):
+Every machine running a shipped coop client resolves THIS repo directly from git at every launch and on `coop sync`: a clone of the default branch, no pinned copy, refreshed when older than 15 minutes and kept as last-known-good when offline. What the client reads, since coop 0.24.0 (released 2026-09-30):
 
-- `standards.yml` MUST keep `schema_version: 1`, the exact `authority` / `authoritative_ref` / `content_mode` / `precedence` / `refresh` scalar values, and a flat `standards:` map with EXACTLY three domains — `sql`, `dax`, `semantic_model` — whose `path` values are byte-exact `standards/sql.md`, `standards/dax.md`, `standards/semantic-model.md`. Never add domains, nesting, or front matter to `standards.yml`.
-- The three files under `standards/` are ASSEMBLED products — the only files clients read. They are built from the structured source articles; do not hand-edit them.
-- Retrieval is heading-based: the client splits the pinned file for the identified domain on `#{1..4}` headings and keeps up to 6 sections whose heading text matches task topic words. Therefore: (a) every article's `#` title must name its topic plainly (e.g. "Gold Stored Procedures", "Choosing a Power BI File Type"); (b) articles with distinctive, non-generic titles go EARLIER in the assembly order, or broad topic words crowd them out; (c) rules a retriever must apply independently need self-contained headings — see "Editing articles".
-- The structured source articles (`SQL/`, `Power BI/`, `Technology/`) carry YAML front matter for the future Azure AI Search design. Front matter is stripped during assembly and is invisible to shipped clients.
-- To change what clients enforce: edit the source article, re-run the assembly (`python3 scripts/assemble.py`), verify (below), commit. Clients worldwide pick it up on their next `coop sync` — no release needed.
-- Verify before pushing: every Markdown path in `standards.yml` exists; `python3 scripts/assemble.py --check` reports the pinned files are current; a sample prompt per domain retrieves the expected section.
+- Every Markdown article under `SQL/`, `Power BI/`, `Technology/`, or any new top-level folder, whose YAML front matter has `status: active`. Nothing under `deprecation/`, and nothing in `standards/`, `standards.yml`, or `scripts/`.
+- Front matter routes the article. `domain: sql` is the client's SQL domain. `domain: powerbi` with `artifact: dax_expression` or `artifact: measure` is the DAX domain; every other `powerbi` artifact, including the `Power BI/Reports/` articles and `File Types`, is the semantic-model domain. Any other `domain` value becomes a domain of its own without a client release. The client applies the domain's articles while it writes or reviews SQL, DAX, a model, or a report.
+- Retrieval is whole-article: for a task the client injects the domain's general articles (`layer: agnostic` and `technology: agnostic`, such as SQL Conventions and SQL Layout) plus the articles whose `layer`, `artifact`, `technology`, or title words match the prompt, each stamped with its path, SHA-256, and the repo commit. A domain with fewer than three articles is injected whole. Therefore: (a) keep `layer`, `artifact`, and `technology` exact, because they are the match keys; (b) give every article a title whose words name its topic, because title words are the other match key; (c) keep `id` unique, because two active articles with the same `id` are both kept and every client reports the pair as a warning.
+- An article is read as one unit and hashed on every read. Split an article rather than let it grow past what one task should receive.
+- To change what clients enforce: edit the source article, verify (below), commit to the default branch. Clients pick it up at their next launch or `coop sync`. No assembly step and no release.
+- `standards.yml`, `standards/*.md`, and `scripts/assemble.py` are the retired v1 contract that clients before 0.24.0 read. Do not hand-edit the assembled files. Until the owner confirms every client is on 0.24.0 or later, run `python3 scripts/assemble.py` after editing an article so an older client is not left behind; after that the three files, `standards.yml`, and the script can be deleted in one change.
+- Verify before pushing: every active article has complete front matter (`id`, `title`, `domain`, `layer`, `artifact`, `technology`, `status`); no two active articles share an `id`; `python3 scripts/assemble.py --check` reports the pinned files are current while the v1 files remain.
 
 ## Editing this file
 
@@ -53,22 +54,22 @@ Every machine running a shipped coop client resolves THIS repo through a pinned 
 
 - Begin every active standards article with YAML front matter containing `id`, `title`, `domain`, `layer`, `artifact`, `technology`, and `status`.
 - Use short lowercase `snake_case` values for filters. Use `agnostic` when a layer, artifact, or technology does not restrict the article.
-- Keep `id` stable and unique. Keep all other metadata synchronized with the article scope, path, and `standards.yml` route.
+- Keep `id` stable and unique. Keep all other metadata synchronized with the article scope and path; clients match on `layer`, `artifact`, and `technology` exactly.
 - Treat metadata as exact-match retrieval fields. The Azure AI Search ingestion process must extract the front matter and copy it to every article chunk; Markdown indexing alone does not create filterable fields from YAML.
 - Map metadata fields to filterable `Edm.String` fields in Azure AI Search. Do not add free-form tags unless they support a defined retrieval filter.
 
 ## Structure and routing
 
-- STATUS: the layered/nested route model below describes the target design (schema v2 + Azure AI Search) and is NOT what shipped clients execute. Until v2 ships, the flat three-domain v1 contract and assembly flow in "Shipped-client contract" above is authoritative; organize new articles under `SQL/`, `Power BI/`, and `Technology/` and assemble them into the pinned files.
-- When adding, moving, or replacing an active article, update `standards.yml` so deterministic lookup selects the correct file.
-- Put every normative article dependency directly in the applicable `standards.yml` route. Do not rely on prose references between Markdown files for retrieval; use links only for human navigation or non-normative context.
+- STATUS: the layered/nested route model below describes the target design (schema v2 + Azure AI Search) and is NOT what shipped clients execute. Shipped clients read the active articles by front matter as described in "Shipped-client contract" above; organize new articles under `SQL/`, `Power BI/`, and `Technology/` with complete front matter.
+- When adding, moving, or replacing an active article, set its front matter so retrieval selects it, and while the v1 files remain add it to the `MAP` in `scripts/assemble.py` and re-run the assembly.
+- Put every normative rule in the article whose front matter covers it. Do not rely on prose references between Markdown files for retrieval; use links only for human navigation or non-normative context.
 - A rule must live at the narrowest scope that fully covers it. Do not copy the same normative rule into several articles unless each copy is needed for an independently retrieved article.
-- Files not listed in an active `standards.yml` route are not mandatory policy. Label discussion documents and placeholders clearly.
+- Files without `status: active` front matter are not mandatory policy and never reach a client. Label discussion documents and placeholders clearly.
 - Keep deprecated standards unchanged under `deprecation/`. They are historical material and must not be restored to active routes or treated as fallback policy.
 
 ## Validation
 
-- Check that every Markdown path in `standards.yml` exists.
+- Check that every active article has complete front matter and a unique `id`; while the v1 files remain, check that every Markdown path in `standards.yml` exists.
 - Check that deprecated source files remain unchanged when an article is reorganized.
 - Review nearby articles for conflicting scope, terminology, naming, or examples.
 - Summarize any remaining undecided policy for the owner after editing.

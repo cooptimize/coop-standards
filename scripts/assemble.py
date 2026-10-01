@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 """Assemble the client-pinned standards files from the structured source articles.
 
-Shipped coop clients read ONLY the three v1-pinned files (standards/sql.md,
+Coop clients before 0.24.0 read ONLY the three v1-pinned files (standards/sql.md,
 standards/dax.md, standards/semantic-model.md) and retrieve sections by
-heading match. This script rebuilds those files from the source articles
+heading match; 0.24.0 and later read the source articles directly (see AGENTS.md).
+This script rebuilds the pinned files from the source articles
 under SQL/, Power BI/, and Technology/. Never hand-edit the pinned files.
 
 Usage:
