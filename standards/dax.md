@@ -20,6 +20,23 @@ VAR result = [Sales Amount] - [Sales Cost]
 RETURN result
 ```
 
+## Measure expression standards
+
+- Use `SUM` for additive base measures.
+- Build filtered measures from the base measure instead of repeating its aggregation.
+
+```dax
+[Sales Amount | Intercompany] =
+VAR result = CALCULATE([Sales Amount], KEEPFILTERS(Customer[Intercompany] = TRUE()))
+RETURN result
+```
+
+## DAX validation standards
+
+- Establish the business definition, what is being counted or summed, report-filter behavior, and date-table requirements before writing the expression.
+- Build and test incrementally.
+- Check the base result, slicers, blank/zero/no-row cases, and a known control total when available.
+
 ## DAX average standards
 
 Never use `AVERAGE` or `AVERAGEX`: they leave the business numerator and denominator implied, making the intended average ambiguous. Define both explicitly, then use `DIVIDE` so it is clear what is being totaled and what it is divided by.
@@ -208,7 +225,11 @@ DIVIDE([Sales Amount], [Sales Quantity], 0)
 
 Before adding more complex DAX, check what one source row represents, the relationships, and source transformations. When the model structure causes the complexity, move stable joins and row-level business transformations into the model or source layer.
 
-## References (non-normative)
+## Calculation placement defaults
+
+Put organization-certified calculations in Gold SQL when multiple semantic models use them or are expected to. Otherwise, use DAX.
+
+## Supporting references
 
 - [Microsoft DAX `VAR` syntax and identifier rules](https://learn.microsoft.com/en-us/dax/var-dax)
 - [Microsoft: avoid using `FILTER` as a `CALCULATE` filter argument](https://learn.microsoft.com/en-us/dax/best-practices/dax-avoid-avoid-filter-as-filter-argument)
@@ -223,33 +244,26 @@ Before adding more complex DAX, check what one source row represents, the relati
 - [Microsoft `DIVIDE`](https://learn.microsoft.com/en-us/dax/divide-function-dax)
 - [Microsoft `VALUES`](https://learn.microsoft.com/en-us/dax/values-function-dax)
 
-# Semantic Model Measures
+# Measure Metadata
 
-## Standards
+These standards define measure names, descriptions, visibility, and formatting. Rules for writing measure expressions belong in DAX.
 
-### Measure naming standards
+## Measure naming standards
 
 - Name base measures for their business value, such as `Sales Amount` or `Sales Quantity`.
-- Name filtered measures `{Base Measure} | {Filter}` and reference the base measure instead of repeating its aggregation.
-- Use `SUM` for additive base measures. Keep model-specific filtered measures in DAX, built from the base measure.
+- Name filtered measures `{Base Measure} | {Filter}`.
 
-```dax
-[Sales Amount] = SUM('Sales Transactions'[SalesAmount])
+```text
+Sales Amount | Intercompany
 ```
 
-```dax
-[Sales Amount | Intercompany] =
-VAR result = CALCULATE([Sales Amount], KEEPFILTERS(Customer[Intercompany] = TRUE()))
-RETURN result
-```
-
-### Measure visibility standards
+## Measure visibility standards
 
 - Expose business aggregations as explicit measures.
 - Hide numeric columns not intended for direct aggregation or set `summarizeBy: none`.
 - Give every visible measure a description; hidden helper measures can omit it.
 
-### Measure format standards
+## Measure format standards
 
 - Give every visible measure an explicit format string.
 - Align commas and decimal points within the visual.
@@ -259,19 +273,7 @@ RETURN result
 "$ #,0" & UNICHAR(160) & ";$ (#,0);$ 0" & UNICHAR(160)
 ```
 
-### Measure validation standards
-
-- Establish the business definition, what is being counted or summed, report-filter behavior, and date-table requirements before writing the measure.
-- Build and test incrementally.
-- Check the base result, slicers, blank/zero/no-row cases, and a known control total when available.
-
-## Default positions
-
-### SQL or DAX defaults
-
-Put organization-certified calculations in Gold SQL when multiple semantic models use them or are expected to. Otherwise, use DAX.
-
-### Measure number-format defaults
+## Measure number-format defaults
 
 Use these formats unless a project-specific format overrides them:
 

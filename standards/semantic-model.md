@@ -40,7 +40,7 @@ Exclude local data caches and per-user settings from Git. Check these entries ev
 
 Do not ignore the entire `.pbi` folder: it can also contain shared project settings. Adding ignore rules does not remove files already tracked by Git; untrack those files while retaining local copies.
 
-## References (non-normative)
+## Supporting references
 
 
 - [Power BI Desktop project report folder](https://learn.microsoft.com/power-bi/developer/projects/projects-report)
@@ -65,6 +65,16 @@ Organize workspaces by department or user group. The workspace represents the au
 ### App audience defaults
 
 Avoid dividing an app into Power BI audiences; the management overhead is rarely worth it.
+
+### App access defaults
+
+Create one Microsoft Entra ID security group for each Power BI app and use that group to manage app access.
+
+## Open decisions (not standards)
+
+- Security-group naming and ownership.
+- How membership is requested, approved, reviewed, and removed.
+- Whether the app security group also grants workspace access.
 
 # Report Page Formatting
 
@@ -127,7 +137,7 @@ Use approved custom SVG assets for KPI status indicators instead of platform-def
 
 Use one to five visible slicers instead of relying on the built-in Filters pane. Slicers are discoverable, flexible, and can be selectively synchronized across pages.
 
-## Open decisions (non-normative)
+## Open decisions (not standards)
 
 Clarify whether the cell-shading prohibition excludes alternating row backgrounds, which are the current default for large tables.
 
@@ -137,9 +147,8 @@ Clarify whether the cell-shading prohibition excludes alternating row background
 
 ### Connection parameter standards
 
-- Use `SQLServer` and `SQLDB` connection parameters.
-- Do not use `PartialData`, the legacy development data-limiting parameter, in new models.
-- Define schema and table names as local `let` steps, distinct from the shared `SQLServer` and `SQLDB` parameters.
+- Use `SQLServer` and `SQLDB` as shared connection parameters.
+- In each source query, set `SchemaName` and `TableName` for the source object. Do not create shared parameters for schema and table names.
 
 ```powerquery
 let
@@ -151,6 +160,10 @@ in
     Result
 ```
 
+### Transformation standards
+
+Do not perform transformations in Power Query. Keep M queries limited to parameters, connections, source navigation, and the approved one-row measure-table definition below. Put data transformations in SQL.
+
 ### Fact query standards
 
 For every fact, the Attributes query reads source rows. Its paired measure query contains one `Int64` column, `Calculation`, and one row with value `0`.
@@ -161,13 +174,15 @@ Table placement and visibility are defined in [Fact Tables](<Fact Tables.md>).
 
 ### Measure table query standards
 
-Use a literal `#table` for every one-row measure table so Tabular Editor can read it. Do not use the compressed `Binary.Decompress`/JSON expression produced by **Enter Data**.
+Use a literal `#table` for every one-row measure table so Tabular Editor can read it. Do not use the compressed `Binary.Decompress`/JSON expression produced by **Enter Data** because it's not human readable.
 
 ```powerquery
 #table(type table [Calculation = Int64.Type], {{0}})
 ```
 
 ### Power Query group-order standards
+
+In the Power Query pane, organize parameters and queries into folders in this order:
 
 1. Parameters
 2. Dimensions
@@ -179,45 +194,30 @@ Use a literal `#table` for every one-row measure table so Tabular Editor can rea
 
 ### Development refresh defaults
 
-Use **Home > Refresh > Sync schema only** in Power BI Desktop when developing without loading data. Local data loads are allowed whenever useful for development or testing; they do not need to wait for deployment.
-
-Power BI's built-in refresh options replace the need for `PartialData`, the old filter used to limit development data loads.
-
-## Open decisions (non-normative)
-
-- A migration process for existing `PartialData` models is not defined.
-- Allowed M transformations, native queries, and query-folding requirements are not defined. Do not infer a ban on all M transformations from the simple source-navigation example.
-- Power BI incremental-refresh parameters and setup are not defined here; loading recipes belong in the separate patterns knowledge base.
-
-## References (non-normative)
-
-- [Microsoft: Power BI refresh options](https://learn.microsoft.com/en-us/power-bi/connect-data/refresh-data)
+During local development, default to refreshing the schema without loading data by using **Refresh schema only** in Power BI Desktop or the equivalent in Tabular Editor. Load data locally when it is useful for development or testing.
 
 # Composite Models
+
+A composite model combines content from existing semantic models. One model supplies the shared foundation; secondary models extend it with additional facts.
 
 ## Standards
 
 ### Composite model structure standards
 
 - Designate exactly one Primary model in each composite-model family.
-- Take shared dimensions from Primary; add facts from secondary models afterward.
+- Add the Primary model first and each secondary model afterward.
+- Take shared dimensions from Primary; add facts from secondary models.
 - Keep imported table names unchanged.
-
-`Finance + Project Accounting`: Finance is Primary; Project Accounting adds facts. For SIOP, Inventory is Primary and Project Management adds facts.
 
 ### Large dimension validation standards
 
-When a large or high-cardinality dimension such as Voucher is required, validate model size, memory use, and successful deployment before adopting it.
+When a large or high-cardinality dimension is required, validate model size, memory use, and successful deployment before adopting it.
 
 ## Default positions
 
 ### Composite dimension defaults
 
-Exclude large or high-cardinality dimensions such as Voucher by default; they can cause model-size and memory errors.
-
-## Open decisions (non-normative)
-
-Whether Production participates in SIOP.
+Exclude large or high-cardinality dimensions by default; they can cause model-size and memory errors.
 
 # Fact Measure and Attribute Tables
 
@@ -251,11 +251,6 @@ Use these folders when the fields exist:
 | Keys | All fields hidden |
 | Numbers | All fields hidden |
 
-## Open decisions (non-normative)
-
-- A universal singular/plural naming rule is not defined; `Ledger Transaction Attributes` and `Ledger Transactions` are the approved example.
-- Whether one-row measure tables must remain disconnected is not explicitly defined. Do not infer a relationship requirement from the phrase "one-row table."
-
 # Relationships
 
 ## Standards
@@ -269,19 +264,13 @@ Use these folders when the fields exist:
 Sales[FKCustomer] → Customer[PKCustomer] (N:1)
 ```
 
-### Inactive relationship standards
+### Impossible relationship standards
 
-Every inactive relationship needs an intentional `USERELATIONSHIP()` consumer. Remove inactive relationships with no consumer.
+Use an `FKNULL` relationship to record that a fact and dimension cannot conceptually be joined. In the model diagram, this distinguishes an impossible relationship from one that is merely missing and provides a permanent record that every potential relationship was considered.
 
-```dax
-USERELATIONSHIP(FactSales[FKShipDate], 'Date'[PKDate])
-```
+Never use `FKNULL` to replace a valid relationship with missing, incomplete, or unmatched keys.
 
-### FKNULL relationship standards
-
-Use `FKNULL` only when the fact and dimension cannot conceptually be joined. Never use it to replace a valid relationship with missing, incomplete, or unmatched keys.
-
-Relate the fact's `FKNULL` column to the dimension key. Without a relationship, a visual can repeat the fact result for each dimension member. An active `FKNULL` relationship summarizes it under the blank/null member.
+Relate the fact's `FKNULL` column to the dimension key. This prevents a visual from repeating the fact result for every member of an unrelated dimension and is more efficient than leaving the relationship absent. Keep the relationship active so the fact summarizes under the blank/null member.
 
 Adding this after deployment can change report results. Regression-test affected reports before deployment.
 
@@ -289,23 +278,11 @@ Adding this after deployment can change report results. Regression-test affected
 Sales[FKNULL] → UnrelatedDimension[PKDimension] (N:1)
 ```
 
-## Default positions
+# Semantic Model Metadata
 
-### Model shape defaults
+These standards define names, formats, visibility, folders, hierarchies, and other metadata for tables and columns. Measure metadata and DAX expressions are defined separately.
 
-Use a star schema with flat dimensions. Avoid chains through intermediate dimension tables unless an approved project requirement overrides this shape.
-
-### Filter direction defaults
-
-Avoid physical bidirectional relationships. Use `CROSSFILTER` in the measure when temporary bidirectional filtering is needed, unless an approved project override requires a physical relationship.
-
-### FKNULL activation defaults
-
-Make `FKNULL` relationships active.
-
-# Organizing Semantic Model Tables
-
-## Table naming standards
+## Table and column naming standards
 
 - Use PascalCase table and calculated-column names unless a more specific naming rule applies. Approved measure-table names and friendly report-facing column names contain spaces; Direct Lake table names match their source exactly.
 - Qualify column references with the table name.
@@ -314,7 +291,7 @@ Make `FKNULL` relationships active.
 Customer[CustomerGroup]
 ```
 
-## Field formatting standards
+## Column metadata standards
 
 - Disable summarization for numeric columns not intended for aggregation, especially visible fields such as Year and Line Number. Hiding a field and disabling summarization are separate settings.
 - Format dates as `mm/dd/yyyy` and Boolean/BIT fields as `TRUE` / `FALSE`.
@@ -325,13 +302,20 @@ Customer[CustomerGroup]
 Created Date ET: 10/06/2025 3:00 PM Eastern
 ```
 
-## Date table standards
+## Date table metadata standards
 
+- Define the Date table in SQL, not with a DAX calculated table.
 - Use one contiguous, marked Date table for time intelligence.
 - Disable auto date/time and remove `LocalDateTable_*` and `DateTableTemplate_*` tables.
 - Use `Calendar`, `Fiscal`, and `Relative` folders when those fields exist.
 
-## Dimension folder standards
+## Calculated column defaults
+
+- Define columns in SQL.
+- Use DAX calculated columns only for approved edge cases where special-character handling requires them.
+- Before adding a calculated column to a Direct Lake model, verify that the specific Direct Lake mode supports it.
+
+## Display folder standards
 
 Dimension folders are optional. When used, group fields by subject.
 
@@ -347,18 +331,12 @@ Month Name → sort by Month Number (hidden)
 
 For a `Product` hierarchy with Category → Subcategory → Product levels, Category is the first field. Check that its label is suitable when a visual displays that label for the hierarchy and cannot rename it.
 
-## Semantic model deployment standards
-
-- Before adding calculated columns to a Direct Lake model, check Microsoft's current [Direct Lake limitations](https://learn.microsoft.com/en-us/fabric/fundamentals/direct-lake-overview#considerations-and-limitations) for the specific Direct Lake mode. Do not use unsupported features.
-- Direct Lake table names match their source exactly.
-- Deploy semantic-model source with TMDL, not TMSL.
-
-## Open decisions (non-normative)
+## Open decisions (not standards)
 
 - Whether timestamp names should explicitly include `Time`, and whether the displayed value needs a zone when the column name already includes it. The current approved example remains `Created Date ET: 10/06/2025 3:00 PM Eastern`.
 - How clients with multiple time zones choose the reporting zone, and where that choice is configured.
-- Date-table range, fiscal-calendar source, and whether the table is supplied by SQL or DAX.
+- Date-table range and fiscal-calendar source.
 
-## References (non-normative)
+## Supporting references
 
 - [Microsoft: Direct Lake overview and limitations](https://learn.microsoft.com/en-us/fabric/fundamentals/direct-lake-overview)

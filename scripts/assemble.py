@@ -35,7 +35,7 @@ MAP = {
     ],
     "standards/dax.md": [
         "Power BI/Semantic Model/DAX.md",
-        "Power BI/Semantic Model/Measures.md",
+        "Power BI/Semantic Model/Measure Metadata.md",
     ],
     "standards/semantic-model.md": [
         "Power BI/File Types.md",
@@ -46,7 +46,7 @@ MAP = {
         "Power BI/Semantic Model/Composite Models.md",
         "Power BI/Semantic Model/Fact Tables.md",
         "Power BI/Semantic Model/Relationships.md",
-        "Power BI/Semantic Model/Organizing Tables.md",
+        "Power BI/Semantic Model/Model Metadata.md",
     ],
 }
 

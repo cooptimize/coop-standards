@@ -15,7 +15,7 @@ These articles describe expected output, not step-by-step implementation pattern
 
 ### Silver
 
-- [Overview](SQL/Silver/Overview.md)
+- [Silver Tables](SQL/Silver/Overview.md)
 
 ### Gold
 
@@ -37,10 +37,10 @@ These articles describe expected output, not step-by-step implementation pattern
 ### Semantic models
 
 - [M Query](<Power BI/Semantic Model/M Query.md>)
-- [Organizing Tables](<Power BI/Semantic Model/Organizing Tables.md>)
+- [Model Metadata](<Power BI/Semantic Model/Model Metadata.md>)
 - [Fact Tables](<Power BI/Semantic Model/Fact Tables.md>)
 - [Relationships](<Power BI/Semantic Model/Relationships.md>)
-- [Measures](<Power BI/Semantic Model/Measures.md>)
+- [Measure Metadata](<Power BI/Semantic Model/Measure Metadata.md>)
 - [DAX](<Power BI/Semantic Model/DAX.md>)
 - [Composite Models](<Power BI/Semantic Model/Composite Models.md>)
 

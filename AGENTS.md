@@ -45,7 +45,7 @@ Every machine running a shipped coop client resolves THIS repo directly from git
 - Bronze and Silver SQL are produced deterministically. Articles MAY document that deterministic contract and human-approved indexing rules, but MUST NOT instruct an LLM to generate or alter the layer's output. Derive generator behavior only from owner-provided source procedures or configuration.
 - Keep general SQL performance guidance in its separate knowledge base. This repository MAY contain approved indexing rules scoped to a layer or artifact.
 - Make headings and sections understandable when retrieved independently, using the minimum context needed to identify applicable objects and technologies.
-- When the owner has not decided a policy, identify it briefly in a clearly non-normative section of the closest applicable article. Do not create a separate considerations article or choose a convention on the owner's behalf.
+- When the owner has not decided a policy, identify it briefly under `Open decisions (not standards)` in the closest applicable article. Do not create a separate considerations article or choose a convention on the owner's behalf.
 - Ask focused questions about unresolved decisions when working interactively. Update the article after the owner answers.
 - Bias SQL terminology and examples toward Dynamics 365 Finance and Operations schemas, such as `CustTable`, `dataareaid`, and `customerid`. Preserve source-system spelling for source fields. Do not turn an example-specific D365 F&O name into a universal requirement unless the owner approves it as policy.
 - Make every active SQL code sample conform to `SQL/SQL Conventions.md` and `SQL/SQL Layout.md`. When either article changes, update all active SQL examples; never alter examples under `deprecation/`.
@@ -60,9 +60,15 @@ Every machine running a shipped coop client resolves THIS repo directly from git
 
 ## Structure and routing
 
+<<<<<<< Updated upstream
 - STATUS: the layered/nested route model below describes the target design (schema v2 + Azure AI Search) and is NOT what shipped clients execute. Shipped clients read the active articles by front matter as described in "Shipped-client contract" above; organize new articles under `SQL/`, `Power BI/`, and `Technology/` with complete front matter.
 - When adding, moving, or replacing an active article, set its front matter so retrieval selects it, and while the v1 files remain add it to the `MAP` in `scripts/assemble.py` and re-run the assembly.
 - Put every normative rule in the article whose front matter covers it. Do not rely on prose references between Markdown files for retrieval; use links only for human navigation or non-normative context.
+=======
+- STATUS: the layered/nested route model below describes the target design (schema v2 + Azure AI Search) and is NOT what shipped clients execute. Until v2 ships, the flat three-domain v1 contract and assembly flow in "Shipped-client contract" above is authoritative; organize new articles under `SQL/`, `Power BI/`, and `Technology/` and assemble them into the pinned files.
+- When adding, moving, or replacing an active article, update `standards.yml` so deterministic lookup selects the correct file.
+- Put every required article dependency directly in the applicable `standards.yml` route. Do not rely on prose references between Markdown files for retrieval; use links only for human navigation or supporting context that is not itself a standard.
+>>>>>>> Stashed changes
 - A rule must live at the narrowest scope that fully covers it. Do not copy the same normative rule into several articles unless each copy is needed for an independently retrieved article.
 - Files without `status: active` front matter are not mandatory policy and never reach a client. Label discussion documents and placeholders clearly.
 - Keep deprecated standards unchanged under `deprecation/`. They are historical material and must not be restored to active routes or treated as fallback policy.
