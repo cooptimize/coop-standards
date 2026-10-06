@@ -70,6 +70,17 @@ WITH
         ON sl.customerid = cust.customerid
 ```
 
+### Comments standards
+
+- Use only line comments in SQL: `-- ...`.
+- Do not use block comments such as `/* ... */`.
+- Use `--` comments to explain intent, assumptions, or the purpose of a conditional expression; keep them brief and directly tied to the code they describe.
+
+```sql
+-- Tests for customer sales without multiplying rows.
+WHERE EXISTS (...)
+```
+
 ### EXISTS standards
 
 - `EXISTS` and `NOT EXISTS` are allowed.
