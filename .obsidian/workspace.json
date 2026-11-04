@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "SQL/SQL Conventions.md",
+                "file": "SQL/Azure SQL Users.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "SQL Conventions"
+              "title": "Azure SQL Users"
             }
           }
         ]
@@ -41,7 +41,9 @@
               "type": "file-explorer",
               "state": {
                 "sortOrder": "alphabetical",
-                "autoReveal": false
+                "autoReveal": false,
+                "showSearch": false,
+                "searchQuery": ""
               },
               "icon": "lucide-folder-closed",
               "title": "Files"
@@ -186,6 +188,10 @@
   },
   "active": "850cc729b180f7c1",
   "lastOpenFiles": [
+    "SQL/SQL Conventions.md",
+    "SQL/Azure SQL Users.md",
+    "Technology/Azure SQL/Azure SQL Users.md",
+    "Technology/Azure SQL",
     "AGENTS.md",
     "SQL/Silver/Overview.md",
     "SQL/Silver/Schema Derivation.md",
@@ -207,11 +213,8 @@
     "Power BI/Semantic Model/Fact Tables.md",
     "Power BI/Semantic Model/DAX.md",
     "Power BI/Semantic Model/Composite Models.md",
-    "SQL/SQL Conventions.md",
     "SQL/SQL Layout.md",
     "SQL/Silver/Schema Manager.md",
-    "SQL/SQL Formatting.md",
-    "README.md",
     "Technology/Fabric",
     "Technology/sqlserver",
     "Technology/serverless",
@@ -220,7 +223,6 @@
     "Power BI/Reports",
     "Power BI/reports",
     "Power BI/Semantic Model",
-    "Power BI",
-    "SQL/Silver"
+    "Power BI"
   ]
 }
