@@ -61,15 +61,9 @@ Every machine running a shipped coop client resolves THIS repo directly from git
 
 ## Structure and routing
 
-<<<<<<< Updated upstream
-- STATUS: the layered/nested route model below describes the target design (schema v2 + Azure AI Search) and is NOT what shipped clients execute. Shipped clients read the active articles by front matter as described in "Shipped-client contract" above; organize new articles under `SQL/`, `Power BI/`, and `Technology/` with complete front matter.
+- STATUS: the layered/nested route model below describes the target design (schema v2 + Azure AI Search) and is NOT what shipped clients execute. Shipped clients read the active articles by front matter as described in "Shipped-client contract" above; organize new articles under `SQL/`, `Power BI/`, `Technology/`, and `Source Systems/` with complete front matter.
 - When adding, moving, or replacing an active article, set its front matter so retrieval selects it, and while the v1 files remain add it to the `MAP` in `scripts/assemble.py` and re-run the assembly.
 - Put every normative rule in the article whose front matter covers it. Do not rely on prose references between Markdown files for retrieval; use links only for human navigation or non-normative context.
-=======
-- STATUS: the layered/nested route model below describes the target design (schema v2 + Azure AI Search) and is NOT what shipped clients execute. Until v2 ships, the flat three-domain v1 contract and assembly flow in "Shipped-client contract" above is authoritative; organize new articles under `SQL/`, `Power BI/`, and `Technology/` and assemble them into the pinned files.
-- When adding, moving, or replacing an active article, update `standards.yml` so deterministic lookup selects the correct file.
-- Put every required article dependency directly in the applicable `standards.yml` route. Do not rely on prose references between Markdown files for retrieval; use links only for human navigation or supporting context that is not itself a standard.
->>>>>>> Stashed changes
 - A rule must live at the narrowest scope that fully covers it. Do not copy the same normative rule into several articles unless each copy is needed for an independently retrieved article.
 - Files without `status: active` front matter are not mandatory policy and never reach a client. Label discussion documents and placeholders clearly.
 - Keep deprecated standards unchanged under `deprecation/`. They are historical material and must not be restored to active routes or treated as fallback policy.

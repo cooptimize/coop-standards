@@ -28,6 +28,12 @@ These articles describe expected output, not step-by-step implementation pattern
 
 - [Fabric Warehouse](<Technology/Fabric/Fabric Warehouse.md>)
 
+## Source systems
+
+- [D365 F&O Source Tables](<Source Systems/D365 FO Source Tables.md>)
+- [D365 Dataverse Source Tables](<Source Systems/D365 Dataverse Source Tables.md>)
+- [D365 Exports](<Source Systems/D365 Exports.md>)
+
 ## Power BI
 
 ### General
