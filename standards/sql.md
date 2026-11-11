@@ -32,6 +32,19 @@ FROM d365fo.custtable AS ct;
 - Use them for expected null behavior, such as presenting a missing value after a `LEFT JOIN`; do not use them to conceal incorrect source data or repair Silver data in a query.
 - There is no repository-wide preference between `COALESCE` and `ISNULL`; use the function whose behavior fits the expression and target type.
 
+### Function standards
+
+- Do not wrap a column in a function unless the data proves the function is needed. This covers conversions (`CAST`, `CONVERT`, `TRY_CONVERT`, `TRY_CAST`), case and whitespace functions (`UPPER`, `LOWER`, `TRIM`, `LTRIM`, `RTRIM`), null handling, and every other scalar function.
+- Proof comes from the source, not from habit: the column's declared type and length, its collation, or the actual values. When the columns being compared already share a type and collation, a conversion or case function changes nothing and must not be written.
+- Never place a function on a column in a `JOIN`, `ON`, or `WHERE` predicate. A function there hides the column from indexes and statistics. If the two sides really differ, make them comparable at the source (fix the type or collation in Silver, or in the CTE that prepares the key), and record the mismatch as a defect.
+- Every function that stays is documented by a `--` comment on the line above it that names the evidence: the source type, collation, or value pattern that requires it.
+- A function in the projection that only restates the declared type, such as `CAST(x AS DATETIME2(6))` on a `DATETIME2(6)` column, is a defect.
+
+```sql
+-- Source stores the order date as NVARCHAR(10) in yyyy-MM-dd form; the target is DATE.
+     ,TRY_CONVERT(DATE, sl.orderdate, 23) AS OrderDate
+```
+
 ### Alias standards
 
 - Alias every table and CTE reference, even when only one source is referenced.
@@ -65,6 +78,17 @@ WITH
         ON sl.customerid = cust.customerid
 ```
 
+### Comments standards
+
+- Use only line comments in SQL: `-- ...`.
+- Do not use block comments such as `/* ... */`.
+- Use `--` comments to explain intent, assumptions, or the purpose of a conditional expression; keep them brief and directly tied to the code they describe.
+
+```sql
+-- Tests for customer sales without multiplying rows.
+WHERE EXISTS (...)
+```
+
 ### EXISTS standards
 
 - `EXISTS` and `NOT EXISTS` are allowed.
@@ -74,6 +98,12 @@ WITH
 -- Tests for customer sales without multiplying rows.
 WHERE EXISTS (...)
 ```
+
+### Error-handling standards
+
+- Keep SQL lean. Do not add `TRY`/`CATCH`, `THROW`, `RAISERROR`, `@@ERROR` or `@@ROWCOUNT` checks, `IF EXISTS` guards, or other defensive checks unless the project's standards ask for them. Let an error stop the statement and reach the caller or the orchestrating pipeline.
+- Put validation outside the object, in separate test queries: row counts, grain, duplicate keys, orphaned foreign keys, and expected totals. Hand them over with the change and run them on dev after it is deployed.
+- When editing existing code that already has error handling, leave it as it is unless the change is about it.
 
 ## Default positions
 
@@ -407,17 +437,24 @@ Explain why a non-obvious choice exists; do not narrate the SQL. Phase comments 
 -- A full refresh requires the prior snapshot to be removed.
 ```
 
+## Error-handling standards
+
+Keep the procedure to the four phases. Do not add `TRY`/`CATCH`, `THROW`, `RAISERROR`, row-count assertions or other defensive checks unless the project's standards ask for them; validation runs as separate test queries after the load, as SQL Conventions describe.
+
 ## Preventing empty or partial tables
 
 - Use an explicit transaction when DirectQuery, integrations, or other live consumers require removal and replacement to commit together.
-- Commit on success; roll back on failure.
+- A failed statement must roll back the whole transaction without error-handling code. In Fabric Warehouse a failed statement rolls back the transaction on its own. In SQL Server and Azure SQL, put `SET XACT_ABORT ON;` before `BEGIN TRANSACTION` so any error rolls back the transaction and stops the procedure. Do not wrap the transaction in `TRY`/`CATCH`.
 - Limit the transaction to statements that need to become visible together. Gather and transform beforehand when the loading pattern permits; long transactions increase blocking, conflicts, and resource use.
 - Use this only when required by the incremental or replacement strategy.
 - A standalone `MERGE` commits its changes together under autocommit. Use an explicit transaction when it needs to commit with other statements.
 
 ```sql
+-- Any error rolls back the removal and the write together (SQL Server, Azure SQL).
+SET XACT_ABORT ON;
+
 BEGIN TRANSACTION;
--- Removal and writing occur here; roll back on failure.
+-- Removal and writing occur here.
 COMMIT TRANSACTION;
 ```
 
