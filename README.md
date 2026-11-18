@@ -33,6 +33,8 @@ These articles describe expected output, not step-by-step implementation pattern
 - [D365 F&O Source Tables](<Source Systems/D365 FO Source Tables.md>)
 - [D365 Dataverse Source Tables](<Source Systems/D365 Dataverse Source Tables.md>)
 - [D365 Exports](<Source Systems/D365 Exports.md>)
+- [D365 F&O Table Joins](<Source Systems/D365 FO Table Joins.md>)
+- [D365 Project Operations Table Joins](<Source Systems/D365 Project Operations Table Joins.md>)
 
 ## Power BI
 
